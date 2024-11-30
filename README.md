@@ -1,6 +1,7 @@
 # Todos
 
 - [x] Authentication
+- [x] Database setup with Row Level Security
 
 ## Collections
 
