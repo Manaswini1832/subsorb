@@ -14,117 +14,127 @@ app.get('/', (req, res) => {
 //CHANNELS
 app.post('/api/v1/channels', authChecker, async (req, res) => {
   try {
-    if(res.locals == null || res.locals.authenticated == null || res.locals.authenticated == undefined){
-      const message = createErrorObject("Couldn't create channels. Try again later!")
-      
-      res.send(500).json(message)
+    if(!res.locals?.authenticated){
+      res.status(500).json(createErrorObject("Couldn't create channels. Try again later!"))
+      return
     }
     if(res.locals.authenticated == true){
       const channelHandle = req.body.channelHandle
-      if(channelHandle == null){
-        const message = createErrorObject('Invalid channel handle')
-        res.json(message)
-        res.sendStatus(400)
+      if(!channelHandle || channelHandle == ""){
+        res.status(400).json(createErrorObject('Invalid channel handle'))
+        return
       }
-      const url = `https://youtube.googleapis.com/youtube/v3/channels?part=snippet&forHandle=%40${channelHandle}&key=${process.env.SERVER_YOUTUBE_API_KEY}`
-      const { data, error } = await axios.get(url)
 
-      if(error){
-        const message = createErrorObject(error)
-        res.json(message)
-        res.sendStatus(500)
+      //Call Youtube API
+      const url = `https://youtube.googleapis.com/youtube/v3/channels?part=snippet&forHandle=%40${channelHandle}&key=${process.env.SERVER_YOUTUBE_API_KEY}`
+      const { data: ytData, error: ytError } = await axios.get(url);
+
+      if (ytError) {
+        res.status(500).json(createErrorObject(ytError))
+        return
       }
-      
-      const channelDetails = JSON.stringify(data)
-      
-      [ data, error ] = await supabase
-                                .from('Channels')
-                                .insert({ handle: channelHandle, details: channelDetails})
-          
-      if(error == undefined){
-        console.log('inside error')
-        const message = createErrorObject(error)
-        res.json(message)
-        res.sendStatus(500)
+
+      if(ytData.pageInfo.totalResults == 0){
+        res.status(400).json(createErrorObject('Invalid channel handle'))
+        return
       }
-      console.log('after data')
-      res.status(200).json(data)
+      const channelDetails = JSON.stringify(ytData)
+
+      const { data: supabaseData, error: supabaseError } = await supabase
+        .from('Channels')
+        .insert({ handle: channelHandle, details: channelDetails })
+        .select()
+
+      if (supabaseError) {
+        res.status(500).json(createErrorObject(supabaseError))
+        return
+      }
+
+      res.status(200).json(supabaseData)
+      return
+
     }else{
       const message = createErrorObject("Unauthorized to create channels")
       res.status(401).json(message)
+      return
     }
   } catch (error) {
     const message = createErrorObject(error)
     res.status(500).json(message) // Internal server error (500)
+    return
   }
 })
 
 //COLLECTIONS
 app.get('/api/v1/collections', authChecker, async (req, res) => {
   try {
-    if(res.locals == null || res.locals.authenticated == null || res.locals.authenticated == undefined){
-      const message = createErrorObject("Couldn't fetch collections. Try again later!")
-      res.send(500).json(message)
+    if(!res.locals?.authenticated){
+      res.status(500).json(createErrorObject('Couldn\'t fetch collections. Try again later!'))
+      return
     }
+
     if(res.locals.authenticated == true){
-      const { data, error } = await supabase
+      const { data: supabaseData, error: supabaseError } = await supabase
                               .from('Collections')
                               .select('name')
                               .eq('user_id', res.locals.decoded.sub)
         
-      if(error){
-        const message = createErrorObject(error)
-        res.json(message)
-        res.sendStatus(500)
+      if(supabaseError){
+        res.status(500).json(createErrorObject(supabaseError))
+        return
       }
-      res.status(200).json(data)
+
+      console.log(supabaseData)
+      res.status(200).json(supabaseData)
+      return
     }else{
-      const message = createErrorObject("Unauthorized to fetch collections")
-      res.status(401).json(message) //Forbidden. Unauthed users can't fetch collections
+      res.status(401).json(createErrorObject('Unauthorized to fetch collections')) //Forbidden. Unauthed users can't fetch collections
+      return
     }
   } catch (error) {
-    const message = createErrorObject(error)
-    res.status(500).json(message) // Internal server error (500)
+    res.status(500).json(createErrorObject(error))
+    return
   }
 
 })
 
 app.post('/api/v1/collections', authChecker, async (req, res) => {
   const collectionName = req.body.collectionName
-  if(collectionName == null){
-    const message = createErrorObject("Invalid name for a collection")
-    res.status(400).json(message);//Bad request. Can send null collectionNames
+  if(!collectionName){
+    res.status(400).json(createErrorObject('Invalid name for a collection'))
+    return
   }
 
-  if(collectionName !== undefined){
+  if(collectionName){
     try {
-      if(res.locals == null || res.locals.authenticated == null || res.locals.authenticated == undefined){
-        const message = createErrorObject("Couldn't create a collection. Try again later!")
-        res.send(500).json(message)
+      if(!res.locals?.authenticated){
+        res.status(500).json(createErrorObject('Couldn\'t create a collection. Try again later!'))
+        return
       }
-      if(res.locals.authenticated == true){
-        const { data, error } = await supabase
+      if(res.locals.authenticated){
+        const { data: supabaseData, error: supabaseError } = await supabase
                                 .from('Collections')
                                 .insert({ name: collectionName, 'user_id': res.locals.decoded.sub})
                                 .select()
           
-        if(error){
-          const message = createErrorObject(error)
-          res.json(message) //couldn't create collection
-          res.sendStatus(500)
+        if(supabaseError){
+          res.status(500).json(createErrorObject(supabaseError))
+          return
         }
-        res.status(200).json(data)
+
+        res.status(200).json(supabaseData)
+        return
+
       }else{
-        const message = createErrorObject("Unauthorized to create a collection")
-        res.status(401).json(message) //Forbidden. Unauthed users can't create collections
+        res.status(401).json(createErrorObject('Unauthorized to create a collection'))
+        return
       }
     } catch (error) {
-      const message = createErrorObject(error)
-      res.status(500).json(message) // Internal server error (500)
+      res.status(500).json(createErrorObject(error)) // Internal server error (500)
+      return
     }
   }else{
-    const message = createErrorObject("Invalid name for a collection")
-    res.status(400).json(message)//Bad Request. Can't create undefined collectionNames
+    res.status(400).json(createErrorObject('Invalid name for a collection'))//Bad Request. Can't create undefined collectionNames
   }
 })
 
