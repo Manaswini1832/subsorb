@@ -19,6 +19,7 @@ const authChecker = async (req, res, next) => {
         }
         next();
     } catch (err) {
+        console.log(err)
         const message = createErrorObject('Invalid token, auth denied!')
         res.status(400).json(message)
     }
