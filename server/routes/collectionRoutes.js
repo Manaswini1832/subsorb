@@ -5,7 +5,7 @@ import createErrorObject from '../utils/error.js'
 
 const router = express.Router()
 
-router.get('/api/v1/collections', authChecker, async (req, res) => {
+router.get('/', authChecker, async (req, res) => {
     try {
       if(!res.locals?.authenticated){
         res.status(500).json(createErrorObject('Couldn\'t fetch collections. Try again later!'))
@@ -37,7 +37,7 @@ router.get('/api/v1/collections', authChecker, async (req, res) => {
   
   })
   
-  router.post('/api/v1/collections', authChecker, async (req, res) => {
+  router.post('/', authChecker, async (req, res) => {
     const collectionName = req.body.collectionName
     if(!collectionName){
       res.status(400).json(createErrorObject('Invalid name for a collection'))

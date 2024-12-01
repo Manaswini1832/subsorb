@@ -25,6 +25,9 @@ export const SessionProvider = ({ children }) => {
     return () => data?.subscription?.unsubscribe(); // Cleanup
   }, []);
   
+  useEffect(() => {
+    console.log('Session : ', session)
+  }, [session])
 
   return (
     <SessionContext.Provider value={{ session, loading }}>

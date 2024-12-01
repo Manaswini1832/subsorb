@@ -1,7 +1,7 @@
 import express from 'express'
+import axios from 'axios'
 import authChecker from '../middleware/authChecker.js'
 import supabase from '../supabaseClient.js'
-import axios from 'axios'
 import createErrorObject from '../utils/error.js'
 
 const router = express.Router()
