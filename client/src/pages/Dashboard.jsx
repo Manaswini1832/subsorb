@@ -1,16 +1,122 @@
+import { useEffect, useState } from 'react'
 import { useSession } from '../contexts/userContext'
 
 const Dashboard = () => {
-    const { session, loading } = useSession();
+  const { session, loading } = useSession()
+  const [collecs, setCollecs] = useState([])
+  const [error, setError] = useState(null)
+  const [formInput, setFormInput] = useState('')
+
+  const getCollections = async () => {
+    const backendUrl = 'http://localhost:5000/api/v1/collections'
+    try {
+        const response = await fetch(backendUrl, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json', 
+              'Authorization': `Bearer ${session.access_token}`
+            }
+          })
+      if (!response.ok) {
+        throw new Error(`Response status: ${response.status}`)
+      }
+
+      const json = await response.json()
+      setCollecs(json)
+    } catch (error) {
+      setError(error.message)
+    }
+  }
+
+  const makeCollection = async(collecName) => {
+    const backendUrl = 'http://localhost:5000/api/v1/collections'
+    try {
+        const response = await fetch(backendUrl, {
+            method: 'POST',
+            body: JSON.stringify({ collectionName: collecName }),
+            headers: {
+              'Content-Type': 'application/json', 
+              'Authorization': `Bearer ${session.access_token}`
+            }
+          })
+
+        if (!response.ok) {
+            const errorData = await response.json()
+            const errorMessage = errorData.errorMessage || errorData.message || 'Unknown error'
+
+            if (errorMessage.message.toLowerCase().startsWith('duplicate')) {
+                alert('Duplicate collections not allowed')
+            } else {
+                console.log('Error:', errorMessage)
+                alert(errorMessage)//TODO : handle these gracefully
+            }
+            return
+        }
+
+        const responseJson = await response.json()
+        if(responseJson[0]?.name){
+        setCollecs((prev) => {
+            return [responseJson[0], ...prev]
+        })
+        }
+    } catch (error) {
+      alert(error)
+    }
+  }
+
+  const handleFormChange = (e) => {
+    setFormInput(e.target.value)
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    if(formInput === '') return
+    makeCollection(formInput)
+  }
+
+  useEffect(() => {
+    if (session) {
+      getCollections()
+    } else {
+      setCollecs([]);
+    }
+  }, [])
+
+  if (!session) {
+    return <p>Unauthorized</p>;
+  }
+
+  if (error) {
+    return <p>Error: {error}</p>;
+  }
 
   if (loading) return <p>Loading...</p>;
 
-    return(
+  return (
+    <div>
+      <img src={session?.user?.user_metadata?.picture} alt="profile of the user" />
+      <h2>{session?.user?.user_metadata?.name}'s Dashboard</h2>
+      <form onSubmit={handleSubmit}>
         <div>
-            <img src={session?.user?.user_metadata?.picture} alt="profile of the user"/>
-            {session?.user?.user_metadata?.name}'s Dashboard
-      </div>
-    )
-}
+            <label htmlFor='collectionNameInput'>Collection Name :</label>
+            <input id='collectionNameInput' type='text' onChange={handleFormChange} value={formInput}/>
+        </div>
+        <button type="submit">Create</button>
+      </form>
 
-export default Dashboard
+      {collecs.length === 0 ? (
+        <p>No collections available.</p>
+      ) : (
+        <div>
+          {collecs.map((collection, index) => (
+            <div key={index}>
+              <h3>{collection.name}</h3>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default Dashboard;

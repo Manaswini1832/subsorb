@@ -6,7 +6,7 @@
 ## Collections
 
 - [x] Users can create and get collections
-- [ ] Newly created collection shows up in sidebar
+- [x] Newly created collection shows up in sidebar
 - [ ] Users can click on sidebar collections to go to collection page(same route but different UI rendered)
 
 ## Channels, Collection-Channels
@@ -17,6 +17,8 @@
 
 ## Misc
 
+- [ ] Backend response statusCode and json convention check
+- [ ] Finish TODO : Handle errors gracefully parts
 - [ ] Collection screenshotting
 - [ ] UI : themes
 - [ ] Domain
