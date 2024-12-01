@@ -1,39 +1,37 @@
-import supabase from '../supabaseClient.js'
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+dotenv.config();
+import createErrorObject from '../utils/error.js'
 
-// const authChecker = async (req, res, next) => {
-//     const header = req.headers['authorization']
-//     console.log('AUTH MIDDLEWARE')
+const authChecker = async (req, res, next) => {
+    console.log('AUTH MIDDLEWARE')
+    try {
+        const token = req.header('Authorization')?.split(' ')[1]
+        const supabaseSecret = `${process.env.SERVER_SUPABASE_JWT_SECRET}`
 
-//     if(header == null){
-//         res.sendStatus(400);//Bad request
-//     }
-
-//     if (header !== undefined) {
-//         const bearer = header.split(' ')
-//         const token = bearer[1]
-
-//         try {
-//             const { data: { user } } = await supabase.auth.getUser(token)
-
-//             if (user !== null) {
-//                 next();
-//             } else {
-//                 res.sendStatus(403); // Forbidden (403)
-//             }
-//         } catch (err) {
-//             console.error("Unexpected error:", err);
-//             res.sendStatus(500); // Internal server error (500)
-//         }
-//     } else {
-//         res.sendStatus(403); // Forbidden (403)
-//     }
-// };
-
+        if (token) {
+            const decoded = jwt.verify(token, supabaseSecret)
+            res.locals.authenticated = true
+            res.locals.decoded = decoded
+        } else {
+            const message = createErrorObject('No token, auth denied!')
+            res.status(401).json(message)
+        }
+        next();
+    } catch (err) {
+        const message = createErrorObject('Invalid token, auth denied!')
+        res.status(400).json(message)
+    }
+}
 //TO PREVENT OVERLOADING AUTH SERVER
 //UNCOMMENT WHILE DOING ACTUAL MIDDLEWARE TESTING
-const authChecker = async (req, res, next) => {
-    console.log("authorized")
-    next()
-}
+// const authChecker = async (req, res, next) => {
+//     console.log("authorized")
+//     res.locals.authenticated = true
+//     res.locals.user = {
+//         id : 'db022c62-cb67-49b5-aa1f-47c9834f927b'
+//     }
+//     next()
+// }
 
 export default authChecker

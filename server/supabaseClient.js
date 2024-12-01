@@ -4,7 +4,7 @@ dotenv.config();
 
 const supabase = createClient(
   process.env.SERVER_SUPABASE_PROJECT_URL,
-  process.env.SERVER_SUPABASE_ANON_PUBLIC_KEY
+  process.env.SERVER_SUPABASE_ANON_PUBLIC_KEY,
 );
 
 export default supabase;

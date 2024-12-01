@@ -1,0 +1,2 @@
+// a user has unique collections
+CREATE UNIQUE INDEX unique_user_collection ON public."Collections"(user_id, name);

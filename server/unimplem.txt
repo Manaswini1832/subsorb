@@ -1,0 +1,59 @@
+//index.js -> post request
+app.post('/api/v1/collections', authChecker, async (req, res) => {
+  const collectionName = req.body.collectionName
+  if(collectionName == null){
+    res.sendStatus(400);//Bad request. Can send null collectionNames
+  }
+
+  if(collectionName !== undefined){
+    try {
+      if(res.locals.authenticated){
+        // const options = {
+        //     global : {headers: { 'x-my-custom-header': res.locals.decoded.sub }},
+        // }
+        
+        // console.log('after Options')
+        // console.log(process.env.SERVER_SUPABASE_PROJECT_URL)
+        // console.log(process.env.SERVER_SUPABASE_ANON_PUBLIC_KEY)
+        const supabase2 = createClient(
+            process.env.SERVER_SUPABASE_PROJECT_URL,
+            process.env.SERVER_SUPABASE_ANON_PUBLIC_KEY,
+            //options
+        )
+
+        console.log(supabase2)
+        console.log(supabase2.auth)
+        
+        const { user, err } = supabase2.auth.setAuth(res.locals.token)
+        console.log(user)
+        console.log(err) 
+
+        const { data, error } = await supabase2
+                                .from('Collections')
+                                .insert({ name: collectionName, 'user_id': res.locals.decoded.sub})
+        /*
+            [
+              {
+                created_at: '2024-12-01T03:22:20.59231+00:00',
+                name: 'collec1',
+                userId: 'db022c62-cb67-49b5-aa1f-47c9834f927b',
+                id: 8
+              }
+            ]
+        */
+                                
+        console.log(data)
+        console.log(error)
+        res.sendStatus(200)
+      }else{  
+        res.sendStatus(403) //Forbidden. Unauthed users can't create collections
+      }
+    } catch (error) {
+      console.error("Unexpected error:", err);
+      res.sendStatus(500); // Internal server error (500)
+    }
+  }else{
+    res.sendStatus(400)//Bad Request. Can't send undefined collectionNames
+  }
+
+})
