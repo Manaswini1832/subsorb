@@ -1,2 +1,5 @@
 // a user has unique collections
 CREATE UNIQUE INDEX unique_user_collection ON public."Collections"(user_id, name);
+
+// unique collection-channel records
+CREATE UNIQUE INDEX unique_collec_channel_records ON public."Collec_Chan"(collec_id, chan_id);
