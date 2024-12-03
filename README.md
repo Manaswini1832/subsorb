@@ -2,6 +2,7 @@
 
 - [x] Authentication
 - [x] Database setup with Row Level Security
+- [ ] Add indexes in db
 
 ## Collections
 
