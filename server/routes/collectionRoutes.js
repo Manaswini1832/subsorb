@@ -1,7 +1,9 @@
 import express from 'express'
 import authChecker from '../middleware/authChecker.js'
-import supabase from '../supabaseClient.js'
 import createErrorObject from '../utils/error.js'
+import { createClient } from '@supabase/supabase-js'
+import dotenv from 'dotenv';
+dotenv.config();
 
 const router = express.Router()
 
@@ -13,17 +15,29 @@ router.get('/', authChecker, async (req, res) => {
       }
   
       if(res.locals.authenticated == true){
-        const { data: supabaseData, error: supabaseError } = await supabase
+        //TODO : handle token errors or null token stuff
+        const token = req.header('Authorization')?.split(' ')[1]
+        const supabase2 = createClient(
+          process.env.SERVER_SUPABASE_PROJECT_URL,
+          process.env.SERVER_SUPABASE_ANON_PUBLIC_KEY,
+          {
+            global: {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            },
+          },
+        );
+        const { data: supabaseData, error: supabaseError } = await supabase2
                                 .from('Collections')
                                 .select('name')
                                 .eq('user_id', res.locals.decoded.sub)
-          
+                                
         if(supabaseError){
           res.status(500).json(createErrorObject(supabaseError))
           return
         }
   
-        console.log(supabaseData)
         res.status(200).json(supabaseData)
         return
       }else{
@@ -31,6 +45,7 @@ router.get('/', authChecker, async (req, res) => {
         return
       }
     } catch (error) {
+      console.log(error)
       res.status(500).json(createErrorObject(error))
       return
     }
@@ -51,7 +66,19 @@ router.get('/', authChecker, async (req, res) => {
           return
         }
         if(res.locals.authenticated){
-          const { data: supabaseData, error: supabaseError } = await supabase
+          const token = req.header('Authorization')?.split(' ')[1]
+          const supabase2 = createClient(
+            process.env.SERVER_SUPABASE_PROJECT_URL,
+            process.env.SERVER_SUPABASE_ANON_PUBLIC_KEY,
+            {
+              global: {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              },
+            },
+          );
+          const { data: supabaseData, error: supabaseError } = await supabase2
                                   .from('Collections')
                                   .insert({ name: collectionName, 'user_id': res.locals.decoded.sub})
                                   .select()
