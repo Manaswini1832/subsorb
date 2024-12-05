@@ -98,9 +98,17 @@ router.post('/', authChecker, async (req, res) => {
             const collectionID = supabaseCollecs[0].id
             const channelID = supabaseChans[0].id
 
-            if(!collectionID || !channelID){
-                res.status(500).json(createErrorObject('Couldn\'t add channel to collection. Try again later!'))
+            if(supabaseChansError){
+                res.status(500).json(createErrorObject('Can\'t add channel to collection. Try again later!'))
                 return
+            }
+
+            if(!collectionID){
+                res.status(404).json(createErrorObject('Collection doesn\'t exist'))
+            }
+
+            if(!channelID){
+                res.status(404).json(createErrorObject('Channel doesn\'t exist'))
             }
 
             //if both collection and channel-id are present, 
