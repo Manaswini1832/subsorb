@@ -8,13 +8,17 @@
 
 - [x] Users can create and get collections
 - [x] Newly created collection shows up in sidebar
-- [ ] Users can click on sidebar collections to go to collection page(same route but different UI rendered)
+- [x] Users can click on sidebar collections to go to collection page(same route but different UI rendered)
 
 ## Channels, Collection-Channels
 
 - [x] User can add non-existing channels
-- [ ] Fetch collections & related channels everytime a user comes to web app(GET /api/v1/collections, GET /api/v1/collection-channels)
-- [ ] User adds a url to channel on form → POST /api/v1/collection-channels
+- [ ] Fetch channels related to collections from db
+  - [ ] Parse the channel data to get channel name, description, url
+  - [ ] Display channel info in Channel card UI component
+- [ ] User adds a url to channel on form
+  - [ ] regex to get channelHandle
+  - [ ] POST to collec-chans
 
 ## Misc
 

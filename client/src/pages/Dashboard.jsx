@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useSession } from '../contexts/userContext'
+import CollectionCard from '../components/CollectionCard';
 
 const Dashboard = () => {
   const { session, loading } = useSession()
@@ -7,25 +8,52 @@ const Dashboard = () => {
   const [error, setError] = useState(null)
   const [formInput, setFormInput] = useState('')
 
-  const getCollections = async () => {
-    const backendUrl = 'http://localhost:5000/api/v1/collections'
-    try {
-        const response = await fetch(backendUrl, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json', 
-              'Authorization': `Bearer ${session.access_token}`
-            }
-          })
-      if (!response.ok) {
-        throw new Error(`Response status: ${response.status}`)
-      }
+  //TODO : uncomment in production
+  // const getCollections = async () => {
+  //   const backendUrl = 'http://localhost:5000/api/v1/collections'
+  //   try {
+  //       const response = await fetch(backendUrl, {
+  //           method: 'GET',
+  //           headers: {
+  //             'Content-Type': 'application/json', 
+  //             'Authorization': `Bearer ${session.access_token}`
+  //           }
+  //         })
+  //     if (!response.ok) {
+  //       throw new Error(`Response status: ${response.status}`)
+  //     }
 
-      const json = await response.json()
-      setCollecs(json)
-    } catch (error) {
-      setError(error.message)
-    }
+  //     const json = await response.json()
+  //     console.log(json)
+  //     setCollecs(json)
+  //   } catch (error) {
+  //     setError(error.message)
+  //   }
+  // }
+
+  //TODO: comment this. it's only for ease of development
+  const getCollections = async() => {
+    const jsonData = [
+                        {
+                            "name": "collec1"
+                        },
+                        {
+                            "name": "collec2"
+                        },
+                        {
+                            "name": "collec3"
+                        },
+                        {
+                            "name": "collecadjafb"
+                        },
+                        {
+                            "name": "collecblahblah"
+                        },
+                        {
+                            "name": "new collec"
+                        }
+                    ]
+    setCollecs(jsonData)
   }
 
   const makeCollection = async(collecName) => {
@@ -110,7 +138,7 @@ const Dashboard = () => {
         <div>
           {collecs.map((collection, index) => (
             <div key={index}>
-              <h3>{collection.name}</h3>
+              <CollectionCard name={collection.name} />
             </div>
           ))}
         </div>

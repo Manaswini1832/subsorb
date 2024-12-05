@@ -6,6 +6,7 @@ import './index.css'
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from './pages/Home'
 import Dashboard from './pages/Dashboard'
+import Collection from './pages/Collection';
 import Error404 from './pages/404'
 import PrivateRoute from './PrivateRoute'
 
@@ -19,6 +20,14 @@ const App = () => {
               element={
                 <PrivateRoute>
                   <Dashboard />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/dashboard/collection/:collectionName"
+              element={
+                <PrivateRoute>
+                  <Collection />
                 </PrivateRoute>
               }
             />
