@@ -35,6 +35,7 @@ router.post('/', authChecker, async (req, res) => {
         //   return
         // }
         // const channelDetails = JSON.stringify(ytData)
+        //TODO : Remove this in production and uncomment the top part. this is just to prevent overloading the YT API w requests during development
         const channelDetails = '{"kind":"youtube#channelListResponse","etag":"vrn8Ts8KByUxG3cUxqMX90dCJig","pageInfo":{"totalResults":1,"resultsPerPage":5},"items":[{"kind":"youtube#channel","etag":"UlepXkHyby5AoKpIRODsL7Gm_2k","id":"UC6biysICWOJ-C3P4Tyeggzg","snippet":{"title":"Low Level","description":"Yapping about cyber security, software security, and whatever else I find interesting.\n","customUrl":"@lowleveltv","publishedAt":"2020-10-19T01:32:23.748549Z","thumbnails":{"default":{"url":"https://yt3.ggpht.com/_-uDVuD6APPo5U_spZtnhliDrlBkKUV-YZznd9QTgnvaMrLx79Fv3WHXsR31ZXTfY8NkS5YLJg=s88-c-k-c0x00ffffff-no-rj","width":88,"height":88},"medium":{"url":"https://yt3.ggpht.com/_-uDVuD6APPo5U_spZtnhliDrlBkKUV-YZznd9QTgnvaMrLx79Fv3WHXsR31ZXTfY8NkS5YLJg=s240-c-k-c0x00ffffff-no-rj","width":240,"height":240},"high":{"url":"https://yt3.ggpht.com/_-uDVuD6APPo5U_spZtnhliDrlBkKUV-YZznd9QTgnvaMrLx79Fv3WHXsR31ZXTfY8NkS5YLJg=s800-c-k-c0x00ffffff-no-rj","width":800,"height":800}},"localized":{"title":"Low Level","description":"Yapping about cyber security, software security, and whatever else I find interesting.\n"},"country":"US"}}]}'
         console.log("channel details : ", channelDetails)
         

@@ -13,6 +13,7 @@ const authChecker = async (req, res, next) => {
             const decoded = jwt.verify(token, supabaseSecret)
             res.locals.authenticated = true
             res.locals.decoded = decoded
+            console.log('Authed')
         } else {
             const message = createErrorObject('No token, auth denied!')
             res.status(401).json(message)

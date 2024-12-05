@@ -31,7 +31,7 @@ router.get('/', authChecker, async (req, res) => {
         const { data: supabaseData, error: supabaseError } = await supabase2
                                 .from('Collections')
                                 .select('name')
-                                .eq('user_id', res.locals.decoded.sub)
+                                //.eq('user_id', res.locals.decoded.sub)
                                 
         if(supabaseError){
           res.status(500).json(createErrorObject(supabaseError))
