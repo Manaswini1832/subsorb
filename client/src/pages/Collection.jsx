@@ -10,58 +10,35 @@ const Collection = () => {
   const [formInput, setFormInput] = useState('')
   const {collectionName} = useParams()
 
-  //TODO : uncomment in production
-  // const getCollections = async () => {
-  //   const backendUrl = 'http://localhost:5000/api/v1/collections'
-  //   try {
-  //       const response = await fetch(backendUrl, {
-  //           method: 'GET',
-  //           headers: {
-  //             'Content-Type': 'application/json', 
-  //             'Authorization': `Bearer ${session.access_token}`
-  //           }
-  //         })
-  //     if (!response.ok) {
-  //       throw new Error(`Response status: ${response.status}`)
-  //     }
+  const getChannels = async () => {
+    const backendUrl = `http://localhost:5000/api/v1/collection-channels/${collectionName}`
+    try {
+        const response = await fetch(backendUrl, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json', 
+              'Authorization': `Bearer ${session.access_token}`
+            }
+          })
+      if (!response.ok) {
+        throw new Error(`Response status: ${response.status}`)
+      }
 
-  //     const json = await response.json()
-  //     console.log(json)
-  //     setCollecs(json)
-  //   } catch (error) {
-  //     setError(error.message)
-  //   }
-  // }
-
-  //TODO: comment this. it's only for ease of development
-  const getChannels = async() => {
-    const jsonData = [
-                        {
-                            "name": "chan1",
-                            "url" : "https://www.youtube.com/@Shanspeare"
-                        },
-                        {
-                            "name": "chan2",
-                            "url" : "https://www.youtube.com/@Shanspeare"
-                        },
-                        {
-                            "name": "chan3",
-                            "url" : "https://www.youtube.com/@Shanspeare"
-                        },
-                        {
-                            "name": "chan4",
-                            "url" : "https://www.youtube.com/@Shanspeare"
-                        },
-                        {
-                            "name": "chan5",
-                            "url" : "https://www.youtube.com/@Shanspeare"
-                        },
-                        {
-                            "name": "chan6",
-                            "url" : "https://www.youtube.com/@Shanspeare"
-                        }
-                    ]
-    setChannels(jsonData)
+      const jsonData = await response.json()
+      for (let index = 0; index < jsonData.length; index++) {
+        if(!jsonData[index].Collections || !jsonData[index].Collections.name){
+          setChannels([])
+          return
+        }
+        if(jsonData[index].Collections.name && jsonData[index].Collections.name === collectionName){
+          const sanitizedString = jsonData[index].Channels.details.replace(/\n/g, '\\n')
+          const parsedData = JSON.parse(sanitizedString)
+          setChannels((prev) => [...prev, parsedData])
+        }
+      }
+    } catch (error) {
+      setError(error.message)
+    }
   }
 
   useEffect(() => {
@@ -103,7 +80,11 @@ const Collection = () => {
                 <div>
                 {channels.map((channel, index) => (
                     <div key={index}>
-                    <ChannelCard name={channel.name} url={channel.url} />
+                    <ChannelCard name={channel.items[0].snippet.title} 
+                                 url={`https://www.youtube.com/channel/${channel.items[0].id}`} 
+                                 thumbnail={channel.items[0].snippet.thumbnails.default.url}
+                                description={channel.items[0].snippet.description}
+                    />
                     </div>
                 ))}
                 </div>

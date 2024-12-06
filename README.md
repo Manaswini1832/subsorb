@@ -13,15 +13,16 @@
 ## Channels, Collection-Channels
 
 - [x] User can add non-existing channels
-- [ ] Fetch channels related to collections from db
-  - [ ] Parse the channel data to get channel name, description, url
-  - [ ] Display channel info in Channel card UI component
+- [x] Fetch channels related to collections from db
+  - [x] Parse the channel data to get channel name, description, url
+  - [x] Display channel info in Channel card UI component
 - [ ] User adds a url to channel on form
   - [ ] regex to get channelHandle
   - [ ] POST to collec-chans
 
 ## Misc
 
+- [ ] DB nulls
 - [ ] Backend response statusCode and json convention check
 - [ ] Finish TODO : Handle errors gracefully parts
 - [ ] Collection screenshotting

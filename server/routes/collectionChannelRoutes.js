@@ -32,10 +32,72 @@ router.get('/', authChecker, async (req, res) => {
             //if both collection and channel-id are present, 
             const { data: supabaseData, error: supabaseError } = await supabase2
                                     .from('Collection_Channels')
-                                    .select()
+                                    .select(`
+                                                id,
+                                                Collections:collection_id(name) ,
+                                                Channels:channel_id(details)
+                                            `)
 
             if(supabaseError){
                 console.log(supabaseError)
+                res.status(500).json(createErrorObject(supabaseError))//TODO : Brainstorm an informative error here
+                return
+            }
+
+            res.status(200).json(supabaseData)
+            return
+
+        }else{
+            res.status(401).json(createErrorObject('Unauthorized to fetch channels from this collection'))
+            return
+        }
+    } catch (error) {
+        res.status(500).json(createErrorObject(error)) // Internal server error (500)
+        return
+    }
+})
+
+//get json by collection name
+router.get('/:collecName', authChecker, async (req, res) => {
+    try {
+        if(!res.locals?.authenticated){
+            res.status(500).json(createErrorObject('Can\'t fetch channels in the collection right now. Try again later!'))
+            return
+        }
+
+        if(res.locals.authenticated){
+            const token = req.header('Authorization')?.split(' ')[1]
+
+            const supabase2 = createClient(
+            process.env.SERVER_SUPABASE_PROJECT_URL,
+            process.env.SERVER_SUPABASE_ANON_PUBLIC_KEY,
+            {
+                global: {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                },
+            },
+            );
+
+            //if both collection and channel-id are present
+            const queryCollection = req.params.collecName
+
+            if(!queryCollection){
+                res.status(400).json(createErrorObject('Can\'t fetch channels from an invalid collection'))
+                return
+            }
+
+            const { data: supabaseData, error: supabaseError } = await supabase2
+                                    .from('Collection_Channels')
+                                    .select(`
+                                                id,
+                                                Collections:collection_id(name) ,
+                                                Channels:channel_id(details)
+                                            `)
+                                    .eq('Collections.name', queryCollection)
+
+            if(supabaseError){
                 res.status(500).json(createErrorObject(supabaseError))//TODO : Brainstorm an informative error here
                 return
             }

@@ -8,52 +8,26 @@ const Dashboard = () => {
   const [error, setError] = useState(null)
   const [formInput, setFormInput] = useState('')
 
-  //TODO : uncomment in production
-  // const getCollections = async () => {
-  //   const backendUrl = 'http://localhost:5000/api/v1/collections'
-  //   try {
-  //       const response = await fetch(backendUrl, {
-  //           method: 'GET',
-  //           headers: {
-  //             'Content-Type': 'application/json', 
-  //             'Authorization': `Bearer ${session.access_token}`
-  //           }
-  //         })
-  //     if (!response.ok) {
-  //       throw new Error(`Response status: ${response.status}`)
-  //     }
+  const getCollections = async () => {
+    const backendUrl = 'http://localhost:5000/api/v1/collections'
+    try {
+        const response = await fetch(backendUrl, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json', 
+              'Authorization': `Bearer ${session.access_token}`
+            }
+          })
+      if (!response.ok) {
+        throw new Error(`Response status: ${response.status}`)
+      }
 
-  //     const json = await response.json()
-  //     console.log(json)
-  //     setCollecs(json)
-  //   } catch (error) {
-  //     setError(error.message)
-  //   }
-  // }
-
-  //TODO: comment this. it's only for ease of development
-  const getCollections = async() => {
-    const jsonData = [
-                        {
-                            "name": "collec1"
-                        },
-                        {
-                            "name": "collec2"
-                        },
-                        {
-                            "name": "collec3"
-                        },
-                        {
-                            "name": "collecadjafb"
-                        },
-                        {
-                            "name": "collecblahblah"
-                        },
-                        {
-                            "name": "new collec"
-                        }
-                    ]
-    setCollecs(jsonData)
+      const json = await response.json()
+      console.log(json)
+      setCollecs(json)
+    } catch (error) {
+      setError(error.message)
+    }
   }
 
   const makeCollection = async(collecName) => {
