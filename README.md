@@ -16,14 +16,14 @@
 - [x] Fetch channels related to collections from db
   - [x] Parse the channel data to get channel name, description, url
   - [x] Display channel info in Channel card UI component
-- [ ] User adds a url to channel on form
-  - [ ] regex to get channelHandle
-  - [ ] POST to collec-chans
+- [x] User adds a url to channel on form
+  - [x] regex to get channelHandle
+  - [x] POST to collec-chans
 
 ## Misc
 
-- [ ] DB nulls
 - [ ] Backend response statusCode and json convention check
+- [ ] DB nulls
 - [ ] Finish TODO : Handle errors gracefully parts
 - [ ] Collection screenshotting
 - [ ] UI : themes

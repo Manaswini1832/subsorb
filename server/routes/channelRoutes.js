@@ -56,7 +56,6 @@ router.post('/', authChecker, async (req, res) => {
           .select()
   
         if (supabaseError) {
-          console.log(supabaseError)
           res.status(500).json(createErrorObject(supabaseError))
           return
         }
@@ -70,7 +69,6 @@ router.post('/', authChecker, async (req, res) => {
         return
       }
     } catch (error) {
-      console.log(error)
       const message = createErrorObject(error)
       res.status(500).json(message) // Internal server error (500)
       return

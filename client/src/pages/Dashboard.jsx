@@ -23,7 +23,6 @@ const Dashboard = () => {
       }
 
       const json = await response.json()
-      console.log(json)
       setCollecs(json)
     } catch (error) {
       setError(error.message)
@@ -49,7 +48,6 @@ const Dashboard = () => {
             if (errorMessage.message.toLowerCase().startsWith('duplicate')) {
                 alert('Duplicate collections not allowed')
             } else {
-                console.log('Error:', errorMessage)
                 alert(errorMessage)//TODO : handle these gracefully
             }
             return
