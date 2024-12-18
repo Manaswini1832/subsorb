@@ -1,0 +1,28 @@
+@import "../utils/_variables";
+
+.collection-top{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 0 20px 0 20px;
+    padding : 40px 0;
+    text-align: center;
+}
+
+.collection-form{
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    margin: 0 20px 30px 20px;
+}
+
+.dark-dashboard-channels-container{
+    min-height: 30vh;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 20px 10px;
+}

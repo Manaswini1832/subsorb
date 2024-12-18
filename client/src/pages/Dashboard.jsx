@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useSession } from '../contexts/userContext'
 import CollectionCard from '../components/CollectionCard';
+import './Dashboard.scss';
 
 const Dashboard = () => {
   const { session, loading } = useSession()
@@ -93,21 +94,22 @@ const Dashboard = () => {
   if (loading) return <p>Loading...</p>;
 
   return (
-    <div>
-      <img src={session?.user?.user_metadata?.picture} alt="profile of the user" />
-      <h2>{session?.user?.user_metadata?.name}'s Dashboard</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-            <label htmlFor='collectionNameInput'>Collection Name :</label>
-            <input id='collectionNameInput' type='text' onChange={handleFormChange} value={formInput}/>
-        </div>
-        <button type="submit">Create</button>
-      </form>
+    <div className='dark-container'>
+      <div className='user-container'>
+        <img src={session?.user?.user_metadata?.picture} alt="profile of the user" />
+        <h2>{session?.user?.user_metadata?.name}'s Dashboard</h2>
+      </div>
+
+        <form className="dashboard-form" onSubmit={handleSubmit}>
+          <label htmlFor='collectionNameInput'>Collection Name :</label>
+          <input id='collectionNameInput' type='text' onChange={handleFormChange} value={formInput}/>
+          <button type="submit">Create</button>
+        </form>
 
       {collecs.length === 0 ? (
         <p>No collections available.</p>
       ) : (
-        <div>
+        <div className='dark-dashboard-collections-container'>
           {collecs.map((collection, index) => (
             <div key={index}>
               <CollectionCard name={collection.name} />

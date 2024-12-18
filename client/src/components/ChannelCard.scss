@@ -1,0 +1,22 @@
+@import "../utils/_variables";
+
+.dark-channelCard{
+    background: $dark_bg_color;
+    color: white;
+    cursor: pointer;
+    width : 150px;
+    margin : 5px;
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+    font-weight: 200;
+    border-radius: 5px;
+    border-style: dotted;
+    border-color: $pink_accent;
+    border-width: 1px;
+    word-wrap: break-word;
+}
+
+.dark-channelCard:hover {
+    background-color: $dark_collection_card_bg_color;
+}

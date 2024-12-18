@@ -1,0 +1,23 @@
+@import "../utils/_variables";
+
+.dark-collectionCard{
+    background: $dark_bg_color;
+    color: white;
+    cursor: pointer;
+    width : 10vw;
+    min-width : 300px;
+    height: 200px;
+    margin: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 200;
+    border-radius: 5px;
+    border-style: dotted;
+    border-color: $pink_accent;
+    border-width: 1px;
+}
+
+.dark-collectionCard:hover {
+    background-color: $dark_collection_card_bg_color;
+}

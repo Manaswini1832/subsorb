@@ -1,0 +1,33 @@
+@import "../utils/_variables";
+
+.user-container{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    margin: 0 20px 0 20px;
+    padding : 40px 0;
+    text-align: center;
+
+    img{
+        border-radius: 50%;
+        margin: 0 10px;
+    }
+}
+
+.dashboard-form{
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    margin: 0 20px 30px 20px;
+}
+
+.dark-dashboard-collections-container{
+    min-height: 30vh;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 20px 10px;
+}

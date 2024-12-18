@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useSession } from '../contexts/userContext'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import ChannelCard from '../components/ChannelCard'
+import './Collection.scss';
 
 const Collection = () => {
   const { session, loading } = useSession()
@@ -9,6 +10,7 @@ const Collection = () => {
   const [error, setError] = useState(null)
   const [formInput, setFormInput] = useState('')
   const {collectionName} = useParams()
+  const navigate = useNavigate();
 
   const getChannels = async () => {
     const backendUrl = `http://localhost:5000/api/v1/collection-channels/${collectionName}`
@@ -100,6 +102,10 @@ const Collection = () => {
     }
   }
 
+  const goToDashboard = () => {
+    navigate('/dashboard');
+  };
+
   const handleFormChange = (e) => {
     setFormInput(e.target.value)
   }
@@ -138,11 +144,13 @@ const Collection = () => {
 
   if (loading) return <p>Loading...</p>;
     return (
-        <div>
-            {/* <h1>{location.state.collectionName}</h1> */}
-            <h1>{collectionName}</h1>
+        <div className='dark-container'>
+            <div className='collection-top'>
+              <h1>{collectionName}</h1>
+              <button onClick={goToDashboard}>Go to dashboard</button>
+            </div>
 
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className='collection-form'>
                 <div>
                     <label htmlFor='channelUrlInput'>Channel URL :</label>
                     <input id='channelUrlInput' type='text' onChange={handleFormChange} value={formInput}/>
@@ -153,7 +161,7 @@ const Collection = () => {
             {channels.length === 0 ? (
                 <p>Collection Empty</p>
             ) : (
-                <div>
+                <div className='dark-dashboard-channels-container'>
                 {channels.map((channel, index) => (
                     <div key={index}>
                     <ChannelCard name={channel.items[0].snippet.title} 

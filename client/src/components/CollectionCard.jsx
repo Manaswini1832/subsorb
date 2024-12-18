@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 
-import './CollectionCard.css'
+import './CollectionCard.scss'
 
 const CollectionCard = (props) => {
     const navigate = useNavigate();
@@ -10,8 +10,8 @@ const CollectionCard = (props) => {
     };
 
     return (
-        <div className='collectionCard' onClick={() => goToDashboard(props.name)}>
-            <h1>{props.name}</h1>
+        <div className='dark-collectionCard' onClick={() => goToDashboard(props.name)}>
+            <p>{props.name}</p>
         </div>
     )
 }

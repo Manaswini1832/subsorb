@@ -1,4 +1,4 @@
-import '../index.css'
+import '../index.scss'
 import { useNavigate } from 'react-router-dom';
 import { Auth } from '@supabase/auth-ui-react'
 import { ThemeSupa } from '@supabase/auth-ui-shared'
@@ -17,7 +17,7 @@ const Home = () => {
   if (loading) return <p>Loading...</p>
 
   return(
-    <div>
+    <div className='dark-container'>
       {session ? 
       (<div>
         You've already logged in
