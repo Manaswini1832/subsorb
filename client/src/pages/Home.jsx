@@ -1,10 +1,12 @@
 import '../index.scss'
+import './Home.scss'
 import { useNavigate } from 'react-router-dom';
 import { Auth } from '@supabase/auth-ui-react'
 import { ThemeSupa } from '@supabase/auth-ui-shared'
 import { supabase } from '../lib/helper/supabase'
 
 import { useSession } from '../contexts/userContext'
+import { useEffect } from 'react';
 
 const Home = () => {
   const { session, loading } = useSession()
@@ -14,14 +16,18 @@ const Home = () => {
     navigate('/dashboard');
   };
 
+  useEffect(() => {
+    if(session) goToDashboard()
+  }, [session])
+
   if (loading) return <p>Loading...</p>
 
   return(
-    <div className='dark-container'>
+    <div className='dark-container dark-home-container'>
       {session ? 
       (<div>
         You've already logged in
-        <button onClick={goToDashboard}>Go to dashboard</button>
+        <button className='pink-go-to-dashboard-btn' onClick={goToDashboard}>Go to dashboard</button>
       </div>) : 
       (
         <div>
@@ -32,17 +38,12 @@ const Home = () => {
             style: {
                 button: {
                 borderColor: 'rgba(0,0,0,0)',
-                fontFamily: 'monospace'
-                },
-            },
-            variables: {
-                default: {
-                colors: {
-                    brand: "orange",
-                    brandAccent: `gray`,
-                },
-                },
-            },
+                fontFamily: 'Montserrat',
+                position: 'fixed',
+                top :'0',
+                padding: '20px',
+              },
+            }
             }}
             providers={['google']}
             theme='dark'

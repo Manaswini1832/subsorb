@@ -1,0 +1,59 @@
+@import "../utils/_variables";
+
+.dark-overlay-background {
+    background-color: rgba(0, 0, 0, 0.5);
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    cursor: pointer;
+    z-index: 9;
+  }
+  
+  .dark-overlay-container {
+    background-color: $dark_collection_card_bg_color;
+    color: $dark_font_color;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    margin: auto;
+    z-index: 10;
+    padding: 30px 40px;
+    width: 300px;
+    height: fit-content;
+    border-radius: 10px;
+
+    img{
+        width: 300px;
+    }
+    
+    p{
+        font-size: 15px;
+    }
+  }
+  
+  .overlay__controls {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+  
+  .overlay__close:after {
+    display: inline-block;
+    content: "\00d7";
+    position: absolute;
+    top: 2px;
+    right: 4px;
+  }
+  
+  .overlay__close {
+    border: none;
+    background-color: transparent;
+    color: $dark_font_color;
+    font-size: 36px;
+    cursor: pointer;
+  }
+  

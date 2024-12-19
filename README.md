@@ -26,7 +26,6 @@
 - [ ] DB nulls
 - [ ] Finish TODO : Handle errors gracefully parts
 - [ ] Collection screenshotting
-- [ ] UI : themes
 - [ ] Domain
 - [ ] DigitalOcean, Dokku?
 - [ ] Deploy

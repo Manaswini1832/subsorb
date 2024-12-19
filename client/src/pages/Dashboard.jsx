@@ -100,10 +100,12 @@ const Dashboard = () => {
         <h2>{session?.user?.user_metadata?.name}'s Dashboard</h2>
       </div>
 
-        <form className="dashboard-form" onSubmit={handleSubmit}>
-          <label htmlFor='collectionNameInput'>Collection Name :</label>
-          <input id='collectionNameInput' type='text' onChange={handleFormChange} value={formInput}/>
-          <button type="submit">Create</button>
+        <form className="dashboard-form collection-form" onSubmit={handleSubmit}>
+          <div><label htmlFor='collectionNameInput'>Collection Name :</label></div>
+          <div>
+            <input id='collectionNameInput' type='text' onChange={handleFormChange} value={formInput}/>
+            <button  className='dark-create-btn' type="submit">Create</button>
+          </div>
         </form>
 
       {collecs.length === 0 ? (

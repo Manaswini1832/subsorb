@@ -31,3 +31,35 @@
     justify-content: center;
     padding: 20px 10px;
 }
+
+
+.collection-form{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 0 20px 30px 20px;
+
+    div{
+        display: flex;
+    }
+
+    div:first-child{
+        padding: 10px;
+    }
+
+    div:second-child{
+        display: flex;
+        justify-content:space-evenly;
+
+        input{
+            flex-grow: 1;
+            border:none;
+            border-width: 0px;
+        }
+
+        button{
+            flex-grow: 1;
+        }
+    }
+}

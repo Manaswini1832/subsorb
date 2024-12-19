@@ -10,9 +10,14 @@ const Collection = () => {
   const [error, setError] = useState(null)
   const [formInput, setFormInput] = useState('')
   const {collectionName} = useParams()
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   const getChannels = async () => {
+    if (!session) {
+      setChannels([])
+      return
+    }
+    console.log('called')
     const backendUrl = `http://localhost:5000/api/v1/collection-channels/${collectionName}`
     try {
         const response = await fetch(backendUrl, {
@@ -38,6 +43,7 @@ const Collection = () => {
           setChannels((prev) => [...prev, parsedData])
         }
       }
+      console.log('Finished')
     } catch (error) {
       setError(error.message)
     }
@@ -126,12 +132,8 @@ const Collection = () => {
   }
 
   useEffect(() => {
-    if (session) {
-      getChannels()
-    } else {
-      setChannels([])
-    }
-  }, [session])
+    getChannels()
+  }, [])
   
 
   if (!session) {
@@ -147,19 +149,21 @@ const Collection = () => {
         <div className='dark-container'>
             <div className='collection-top'>
               <h1>{collectionName}</h1>
-              <button onClick={goToDashboard}>Go to dashboard</button>
+              <button className='pink-go-to-dashboard-btn' onClick={goToDashboard}>Go to dashboard</button>
             </div>
 
             <form onSubmit={handleSubmit} className='collection-form'>
+                <div><label htmlFor='channelUrlInput'>Channel URL :</label></div>
                 <div>
-                    <label htmlFor='channelUrlInput'>Channel URL :</label>
-                    <input id='channelUrlInput' type='text' onChange={handleFormChange} value={formInput}/>
+                  <input id='channelUrlInput' type='text' onChange={handleFormChange} value={formInput}/>
+                  <button className='dark-create-btn' type="submit">Add</button>
                 </div>
-                <button type="submit">Create</button>
             </form>
 
             {channels.length === 0 ? (
+              <div className='dark-dashboard-channels-container'>
                 <p>Collection Empty</p>
+              </div>
             ) : (
                 <div className='dark-dashboard-channels-container'>
                 {channels.map((channel, index) => (
@@ -167,7 +171,7 @@ const Collection = () => {
                     <ChannelCard name={channel.items[0].snippet.title} 
                                  url={`https://www.youtube.com/channel/${channel.items[0].id}`} 
                                  thumbnail={channel.items[0].snippet.thumbnails.default.url}
-                                description={channel.items[0].snippet.description}
+                                 description={channel.items[0].snippet.description}
                     />
                     </div>
                 ))}

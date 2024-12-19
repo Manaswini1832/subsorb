@@ -1,22 +1,78 @@
 @import "../utils/_variables";
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500&family=Poppins:wght@200;300;400;600&display=swap');
 
 .dark-channelCard{
     background: $dark_bg_color;
-    color: white;
-    cursor: pointer;
-    width : 150px;
+    color: $dark_font_color;
+    width: 300px;
     margin : 5px;
-    padding: 5px;
     display: flex;
     flex-direction: column;
     font-weight: 200;
-    border-radius: 5px;
-    border-style: dotted;
-    border-color: $pink_accent;
+    border-radius: 10px;
+    border-style: solid;
+    border-color: $pink_accent_hover_40;
     border-width: 1px;
-    word-wrap: break-word;
+    overflow-wrap: break-word;
+    overflow: hidden;
 }
 
-.dark-channelCard:hover {
-    background-color: $dark_collection_card_bg_color;
+.dark-channelCard-content{
+    padding: 10px;
+     p{
+        margin: 0;
+        padding-bottom: 40px;
+        font-size: 20px;
+     }
+}
+
+.dark-channelCard-button-container{
+    display: flex;
+}
+
+.dark-channel-card-btn{
+    background-color: $dark_bg_color;
+    color: $dark_font_color;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    border-radius: 100%;
+    border-style: solid;
+    border-color: $pink_accent;
+    border-width: 1px;
+    font-family: 'Montserrat', sans-serif;
+    margin: 0 8px 5px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.dark-channel-card-btn:hover {
+    background-color: $pink_accent_hover;
+    color: black;
+}
+
+.dark-channel-card-btn-invert{
+    background-color: $pink_accent;
+    color: black;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    border-radius: 100%;
+    border-style: solid;
+    border-color: $pink_accent;
+    border-width: 1px;
+    font-family: 'Montserrat', sans-serif;
+    padding: 20px;
+    margin: 0 0 5px 0;
+    border-style: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.dark-channel-card-btn-invert:hover {
+    background-color: $pink_accent_hover;
+    color: $dark_font_color;
 }
