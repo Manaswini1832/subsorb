@@ -25,7 +25,5 @@
 - [ ] Backend response statusCode and json convention check
 - [ ] DB nulls
 - [ ] Finish TODO : Handle errors gracefully parts
-- [ ] Collection screenshotting
 - [ ] Domain
-- [ ] DigitalOcean, Dokku?
-- [ ] Deploy
+- [ ] DigitalOcean, Dokku?, Deploy
