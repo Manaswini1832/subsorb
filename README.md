@@ -26,5 +26,5 @@
 - [ ] DB nulls
 - [ ] Finish TODO : Handle errors gracefully parts
 - [x] Domain
-- [ ] remove backend prints
+- [x] remove backend prints
 - [ ] DigitalOcean

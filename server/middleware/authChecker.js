@@ -4,7 +4,7 @@ dotenv.config();
 import createErrorObject from '../utils/error.js'
 
 const authChecker = async (req, res, next) => {
-    console.log('AUTH MIDDLEWARE')
+    //console.log('AUTH MIDDLEWARE')
     try {
         const token = req.header('Authorization')?.split(' ')[1]
         const supabaseSecret = `${process.env.SERVER_SUPABASE_JWT_SECRET}`
@@ -13,7 +13,7 @@ const authChecker = async (req, res, next) => {
             const decoded = jwt.verify(token, supabaseSecret)
             res.locals.authenticated = true
             res.locals.decoded = decoded
-            console.log('Authed')
+            //console.log('Authed')
         } else {
             const message = createErrorObject('No token, auth denied!')
             res.status(401).json(message)

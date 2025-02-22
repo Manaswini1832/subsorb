@@ -17,7 +17,7 @@ const Collection = () => {
       setChannels([])
       return
     }
-    console.log('called')
+    //console.log('called')
     const backendUrl = `http://localhost:5000/api/v1/collection-channels/${collectionName}`
     try {
         const response = await fetch(backendUrl, {
@@ -43,7 +43,7 @@ const Collection = () => {
           setChannels((prev) => [...prev, parsedData])
         }
       }
-      console.log('Finished')
+      //console.log('Finished')
     } catch (error) {
       setError(error.message)
     }

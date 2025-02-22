@@ -9,7 +9,7 @@ const ChannelCard = (props) => {
     const [isOpen, setIsOpen] = useState(false)
 
     const toggleOverlay = () => {
-        console.log('Toggling')
+        //console.log('Toggling')
         setIsOpen(!isOpen)
     }
 
