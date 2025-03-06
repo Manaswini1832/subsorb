@@ -10,8 +10,6 @@ const Dashboard = () => {
   const [formInput, setFormInput] = useState('')
 
   const getCollections = async () => {
-    console.log("This is the session : ")
-    console.log(session)
     const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_PROD}/api/v1/collections`
     try {
         console.log("This is the access token")
@@ -23,6 +21,8 @@ const Dashboard = () => {
               'Authorization': `Bearer ${session.access_token}`
             }
           })
+        console.log("this is the response")
+        console.log(response)
       if (!response.ok) {
         throw new Error(`Response status: ${response.status}`)
       }
