@@ -24,6 +24,7 @@ const Dashboard = () => {
       }
 
       const json = await response.json()
+      console.log(json)
       setCollecs(json)
     } catch (error) {
       setError(error.message)
