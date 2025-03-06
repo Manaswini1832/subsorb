@@ -10,7 +10,7 @@ const Dashboard = () => {
   const [formInput, setFormInput] = useState('')
 
   const getCollections = async () => {
-    const backendUrl = 'http://localhost:5000/api/v1/collections'
+    const backendUrl = `${process.env.BACKEND_API_URL_PROD}/api/v1/collections`
     try {
         const response = await fetch(backendUrl, {
             method: 'GET',
@@ -31,7 +31,7 @@ const Dashboard = () => {
   }
 
   const makeCollection = async(collecName) => {
-    const backendUrl = 'http://localhost:5000/api/v1/collections'
+    const backendUrl = `${process.env.BACKEND_API_URL_PROD}/api/v1/collections`
     try {
         const response = await fetch(backendUrl, {
             method: 'POST',
