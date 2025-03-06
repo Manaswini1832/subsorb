@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useSession } from '../contexts/userContext'
 import CollectionCard from '../components/CollectionCard';
+import dotenv from 'dotenv';
 import './Dashboard.scss';
 
 const Dashboard = () => {
