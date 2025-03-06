@@ -14,6 +14,8 @@ const Dashboard = () => {
     console.log(session)
     const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_PROD}/api/v1/collections`
     try {
+        console.log("This is the access token")
+        console.log(session.access_token)
         const response = await fetch(backendUrl, {
             method: 'GET',
             headers: {
@@ -25,8 +27,10 @@ const Dashboard = () => {
         throw new Error(`Response status: ${response.status}`)
       }
 
-      const json = await response.json()
-      setCollecs(json)
+      const jsonData = await response.json()
+      console.log("this is the json data")
+      console.log(jsonData)
+      setCollecs(jsonData)
     } catch (error) {
       setError(error.message)
     }
