@@ -11,6 +11,7 @@ const Dashboard = () => {
 
   const getCollections = async () => {
     const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_PROD}/api/v1/collections`
+    console.log("Backendurl : ", backendUrl)
     try {
         console.log("This is the access token")
         console.log(session.access_token)

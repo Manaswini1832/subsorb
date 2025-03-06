@@ -64,7 +64,7 @@ const Collection = () => {
         if (!response.ok) {
             const errorData = await response.json()
             const errorMessage = errorData.errorMessage || errorData.message || 'Unknown error'
-            (errorMessage)
+            console.log(errorMessage)
             return
         }
         else addChannel(collectionName, handle)
