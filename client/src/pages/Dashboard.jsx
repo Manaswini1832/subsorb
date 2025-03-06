@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useSession } from '../contexts/userContext'
 import CollectionCard from '../components/CollectionCard';
-import dotenv from 'dotenv';
 import './Dashboard.scss';
 
 const Dashboard = () => {
@@ -11,7 +10,7 @@ const Dashboard = () => {
   const [formInput, setFormInput] = useState('')
 
   const getCollections = async () => {
-    const backendUrl = `${process.env.BACKEND_API_URL_PROD}/api/v1/collections`
+    const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_PROD}/api/v1/collections`
     try {
         const response = await fetch(backendUrl, {
             method: 'GET',
@@ -32,7 +31,7 @@ const Dashboard = () => {
   }
 
   const makeCollection = async(collecName) => {
-    const backendUrl = `${process.env.BACKEND_API_URL_PROD}/api/v1/collections`
+    const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_PROD}/api/v1/collections`
     try {
         const response = await fetch(backendUrl, {
             method: 'POST',

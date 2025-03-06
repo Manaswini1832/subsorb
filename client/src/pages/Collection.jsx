@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { useSession } from '../contexts/userContext'
 import { useParams, useNavigate } from 'react-router-dom'
 import ChannelCard from '../components/ChannelCard'
-import dotenv from 'dotenv';
 import './Collection.scss';
 
 const Collection = () => {
@@ -19,7 +18,7 @@ const Collection = () => {
       return
     }
     //console.log('called')
-    const backendUrl = `${process.env.BACKEND_API_URL_PROD}/api/v1/collection-channels/${collectionName}`
+    const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_PROD}/api/v1/collection-channels/${collectionName}`
     try {
         const response = await fetch(backendUrl, {
             method: 'GET',
@@ -51,7 +50,7 @@ const Collection = () => {
   }
 
   const makeChannel = async(handle) => {
-    const backendUrl = `${process.env.BACKEND_API_URL_PROD}/api/v1/channels`
+    const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_PROD}/api/v1/channels`
     try {
         const response = await fetch(backendUrl, {
             method: 'POST',
@@ -76,7 +75,7 @@ const Collection = () => {
 
   const addChannel = async(collectName, handle) => {
     ("add channel to collection")
-    const backendUrl = `${process.env.BACKEND_API_URL_PROD}/api/v1/collection-channels`
+    const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_PROD}/api/v1/collection-channels`
     try {
         const response = await fetch(backendUrl, {
             method: 'POST',
