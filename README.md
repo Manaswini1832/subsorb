@@ -1,4 +1,4 @@
-Site live at : ![Link]("https://subsorb.in/")
+Site live at : [Link](https://subsorb.in/)
 
 # Todos
 
