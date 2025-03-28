@@ -1,3 +1,5 @@
+Site live at : [Link]("https://subsorb.in/")
+
 # Todos
 
 - [x] Authentication
@@ -27,4 +29,4 @@
 - [ ] Finish TODO : Handle errors gracefully parts
 - [x] Domain
 - [x] remove backend prints
-- [ ] DigitalOcean
+- [x] DigitalOcean
