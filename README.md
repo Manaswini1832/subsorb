@@ -30,3 +30,14 @@ Site live at : [Link](https://subsorb.in/)
 - [x] Domain
 - [x] remove backend prints
 - [x] DigitalOcean
+
+
+- [x] Make new db
+- [ ] Document how to restart project
+- [ ] Create dev db, project(document everything)
+	- [ ] tables, schema, rules create
+	- [ ] test
+- [ ] Create prod db, project
+	- [ ] tables, schema, rules create
+	- [ ] put on do
+	- [ ] test
