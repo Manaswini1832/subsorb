@@ -17,9 +17,20 @@ router.get('/', authChecker, async (req, res) => {
         if(res.locals.authenticated){
             const token = req.header('Authorization')?.split(' ')[1]
 
+            const supabaseURL = '';
+            const supabase_anon_pub_key = '';
+
+            if (process.env.SERVER_SUPABASE_ENVIRONMENT === "PROD") {
+                supabaseURL = process.env.SERVER_SUPABASE_PROJECT_URL_PROD;
+                supabase_anon_pub_key = process.env.SERVER_SUPABASE_ANON_PUBLIC_KEY_PROD;
+            } else {
+                supabaseURL = process.env.SERVER_SUPABASE_PROJECT_URL_DEV;
+                supabase_anon_pub_key = process.env.SERVER_SUPABASE_ANON_PUBLIC_KEY_DEV;
+            }
+
             const supabase2 = createClient(
-            process.env.SERVER_SUPABASE_PROJECT_URL,
-            process.env.SERVER_SUPABASE_ANON_PUBLIC_KEY,
+            supabaseURL,
+            supabase_anon_pub_key,
             {
                 global: {
                 headers: {
@@ -65,11 +76,22 @@ router.get('/:collecName', authChecker, async (req, res) => {
         }
 
         if(res.locals.authenticated){
-            const token = req.header('Authorization')?.split(' ')[1]
+            const token = req.header('Authorization')?.split(' ')[1];
+
+            const supabaseURL = '';
+            const supabase_anon_pub_key = '';
+
+            if (process.env.SERVER_SUPABASE_ENVIRONMENT === "PROD") {
+                supabaseURL = process.env.SERVER_SUPABASE_PROJECT_URL_PROD;
+                supabase_anon_pub_key = process.env.SERVER_SUPABASE_ANON_PUBLIC_KEY_PROD;
+            } else {
+                supabaseURL = process.env.SERVER_SUPABASE_PROJECT_URL_DEV;
+                supabase_anon_pub_key = process.env.SERVER_SUPABASE_ANON_PUBLIC_KEY_DEV;
+            }
 
             const supabase2 = createClient(
-            process.env.SERVER_SUPABASE_PROJECT_URL,
-            process.env.SERVER_SUPABASE_ANON_PUBLIC_KEY,
+            supabaseURL,
+            supabase_anon_pub_key,
             {
                 global: {
                 headers: {
@@ -129,11 +151,22 @@ router.post('/', authChecker, async (req, res) => {
     }
 
     if(res.locals.authenticated){
-        const token = req.header('Authorization')?.split(' ')[1]
+        const token = req.header('Authorization')?.split(' ')[1];
+
+        const supabaseURL = '';
+        const supabase_anon_pub_key = '';
+
+        if (process.env.SERVER_SUPABASE_ENVIRONMENT === "PROD") {
+            supabaseURL = process.env.SERVER_SUPABASE_PROJECT_URL_PROD;
+            supabase_anon_pub_key = process.env.SERVER_SUPABASE_ANON_PUBLIC_KEY_PROD;
+        } else {
+            supabaseURL = process.env.SERVER_SUPABASE_PROJECT_URL_DEV;
+            supabase_anon_pub_key = process.env.SERVER_SUPABASE_ANON_PUBLIC_KEY_DEV;
+        }
 
         const supabase2 = createClient(
-        process.env.SERVER_SUPABASE_PROJECT_URL,
-        process.env.SERVER_SUPABASE_ANON_PUBLIC_KEY,
+        supabaseURL,
+        supabase_anon_pub_key,
         {
             global: {
             headers: {

@@ -31,13 +31,13 @@ Site live at : [Link](https://subsorb.in/)
 - [x] remove backend prints
 - [x] DigitalOcean
 
-
-- [x] Make new db
+- [x] Make new projects(dev, prod)
 - [ ] Document how to restart project
+- [x] Enable dev, prod authentication
 - [ ] Create dev db, project(document everything)
-	- [ ] tables, schema, rules create
-	- [ ] test
+  - [ ] tables, schema, rules create
+  - [ ] test
 - [ ] Create prod db, project
-	- [ ] tables, schema, rules create
-	- [ ] put on do
-	- [ ] test
+  - [ ] tables, schema, rules create
+  - [ ] put on do
+  - [ ] test
