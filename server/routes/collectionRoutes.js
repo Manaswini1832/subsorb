@@ -18,8 +18,8 @@ router.get('/', authChecker, async (req, res) => {
         //TODO : handle token errors or null token stuff
         const token = req.header('Authorization')?.split(' ')[1];
 
-        const supabaseURL = '';
-        const supabase_anon_pub_key = '';
+        let supabaseURL = '';
+        let supabase_anon_pub_key = '';
 
         if (process.env.SERVER_SUPABASE_ENVIRONMENT === "PROD") {
             supabaseURL = process.env.SERVER_SUPABASE_PROJECT_URL_PROD;
@@ -40,10 +40,15 @@ router.get('/', authChecker, async (req, res) => {
             },
           },
         );
+
+        console.log('Client : ', supabase2);
+
         const { data: supabaseData, error: supabaseError } = await supabase2
                                 .from('Collections')
                                 .select('name')
                                 //.eq('user_id', res.locals.decoded.sub)
+
+        console.log('Supabasedata : ', supabaseData);
                                 
         if(supabaseError){
           res.status(500).json(createErrorObject(supabaseError))
@@ -79,8 +84,8 @@ router.get('/', authChecker, async (req, res) => {
         if(res.locals.authenticated){
           const token = req.header('Authorization')?.split(' ')[1];
 
-          const supabaseURL = '';
-          const supabase_anon_pub_key = '';
+          let supabaseURL = '';
+          let supabase_anon_pub_key = '';
 
           if (process.env.SERVER_SUPABASE_ENVIRONMENT === "PROD") {
               supabaseURL = process.env.SERVER_SUPABASE_PROJECT_URL_PROD;

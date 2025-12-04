@@ -17,8 +17,8 @@ router.get('/', authChecker, async (req, res) => {
         if(res.locals.authenticated){
             const token = req.header('Authorization')?.split(' ')[1]
 
-            const supabaseURL = '';
-            const supabase_anon_pub_key = '';
+            let supabaseURL = '';
+            let supabase_anon_pub_key = '';
 
             if (process.env.SERVER_SUPABASE_ENVIRONMENT === "PROD") {
                 supabaseURL = process.env.SERVER_SUPABASE_PROJECT_URL_PROD;
@@ -78,8 +78,8 @@ router.get('/:collecName', authChecker, async (req, res) => {
         if(res.locals.authenticated){
             const token = req.header('Authorization')?.split(' ')[1];
 
-            const supabaseURL = '';
-            const supabase_anon_pub_key = '';
+            let supabaseURL = '';
+            let supabase_anon_pub_key = '';
 
             if (process.env.SERVER_SUPABASE_ENVIRONMENT === "PROD") {
                 supabaseURL = process.env.SERVER_SUPABASE_PROJECT_URL_PROD;
@@ -153,8 +153,8 @@ router.post('/', authChecker, async (req, res) => {
     if(res.locals.authenticated){
         const token = req.header('Authorization')?.split(' ')[1];
 
-        const supabaseURL = '';
-        const supabase_anon_pub_key = '';
+        let supabaseURL = '';
+        let supabase_anon_pub_key = '';
 
         if (process.env.SERVER_SUPABASE_ENVIRONMENT === "PROD") {
             supabaseURL = process.env.SERVER_SUPABASE_PROJECT_URL_PROD;

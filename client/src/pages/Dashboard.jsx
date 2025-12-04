@@ -78,11 +78,11 @@ const Dashboard = () => {
   }
 
   useEffect(() => {
-    // if (session) {
-    //   getCollections()
-    // } else {
-    //   setCollecs([]);
-    // }
+    if (session) {
+      getCollections()
+    } else {
+      setCollecs([]);
+    }
     console.log("successfully authed to access dashboard");
   }, [])
 

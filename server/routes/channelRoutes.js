@@ -39,8 +39,8 @@ router.post('/', authChecker, async (req, res) => {
         //TODO : handle no token
         const token = req.header('Authorization')?.split(' ')[1];
 
-        const supabaseURL = '';
-        const supabase_anon_pub_key = '';
+        let supabaseURL = '';
+        let supabase_anon_pub_key = '';
 
         if (process.env.SERVER_SUPABASE_ENVIRONMENT === "PROD") {
             supabaseURL = process.env.SERVER_SUPABASE_PROJECT_URL_PROD;
