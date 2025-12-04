@@ -2,29 +2,41 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 dotenv.config();
 import createErrorObject from '../utils/error.js'
+import { jwtVerify, createRemoteJWKSet } from 'jose'
+
+
+const JWKS_URL = `${process.env.SERVER_SUPABASE_PROJECT_URL_DEV}/auth/v1/.well-known/jwks.json`;
+
+const PROJECT_JWKS = createRemoteJWKSet(
+  new URL(JWKS_URL)
+)
+
+async function verifyProjectJWT(jwt) {
+  return jwtVerify(jwt, PROJECT_JWKS)
+}
 
 const authChecker = async (req, res, next) => {
-    //console.log('AUTH MIDDLEWARE')
-    try {
-        const token = req.header('Authorization')?.split(' ')[1]
-        const supabaseSecret = `${process.env.SERVER_SUPABASE_JWT_SECRET}`
+    console.log('AUTH MIDDLEWARE');
+    const token = req.header('Authorization')?.split(' ')[1];
 
-        if (token) {
-            const decoded = jwt.verify(token, supabaseSecret)
-            res.locals.authenticated = true
-            res.locals.decoded = decoded
-            //console.log('Authed')
-        } else {
-            const message = createErrorObject('No token, auth denied!')
-            res.status(401).json(message)
-        }
+    if (!token) {
+        const message = createErrorObject('No token, auth denied!');
+        return res.status(401).json(message);
+    }
+
+    try {
+        const decoded = await verifyProjectJWT(token);
+        res.locals.authenticated = true;
+        res.locals.decoded = decoded;
+        console.log('Authed');
         next();
     } catch (err) {
-        console.log(err)
-        const message = createErrorObject('Invalid token, auth denied!')
-        res.status(400).json(message)
+        console.log('JWT verification failed:', err);
+        const message = createErrorObject('Invalid token, auth denied!');
+        return res.status(401).json(message);
     }
-}
+};
+
 //TO PREVENT OVERLOADING AUTH SERVER
 //UNCOMMENT WHILE DOING ACTUAL MIDDLEWARE TESTING
 // const authChecker = async (req, res, next) => {

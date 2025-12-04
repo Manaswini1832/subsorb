@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useSession } from '../contexts/userContext'
 import CollectionCard from '../components/CollectionCard';
 import './Dashboard.scss';
+import {supabase} from '../lib/helper/supabase'
 
 const Dashboard = () => {
   const { session, loading } = useSession()
