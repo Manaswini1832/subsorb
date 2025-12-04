@@ -5,7 +5,13 @@ import createErrorObject from '../utils/error.js'
 import { jwtVerify, createRemoteJWKSet } from 'jose'
 
 
-const JWKS_URL = `${process.env.SERVER_SUPABASE_PROJECT_URL_DEV}/auth/v1/.well-known/jwks.json`;
+let JWKS_URL = '';
+
+if (process.env.SERVER_SUPABASE_ENVIRONMENT === "PROD") {
+    JWKS_URL = `${process.env.SERVER_SUPABASE_PROJECT_URL_PROD}/auth/v1/.well-known/jwks.json`;
+} else {
+    JWKS_URL = `${process.env.SERVER_SUPABASE_PROJECT_URL_DEV}/auth/v1/.well-known/jwks.json`;
+}
 
 const PROJECT_JWKS = createRemoteJWKSet(
   new URL(JWKS_URL)
