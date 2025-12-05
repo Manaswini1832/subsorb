@@ -28,16 +28,17 @@ Site live at : [Link](https://subsorb.in/)
 - [ ] DB nulls
 - [ ] Finish TODO : Handle errors gracefully parts
 - [x] Domain
-- [x] remove backend prints
+- [ ] remove backend prints
 - [x] DigitalOcean
+- [ ] collection name truncate
 
 - [x] Make new projects(dev, prod)
 - [ ] Document how to restart project
 - [x] Enable dev, prod authentication
-- [ ] Create dev db, project(document everything)
-  - [ ] tables, schema, rules create
-  - [ ] test
-- [ ] Create prod db, project
-  - [ ] tables, schema, rules create
-  - [ ] put on do
-  - [ ] test
+- [x] Create dev db, project(document everything)
+  - [x] tables, schema, rules create
+  - [x] test
+- [x] Create prod db, project
+  - [x] tables, schema, rules create
+  - [x] put on do
+  - [x] test
