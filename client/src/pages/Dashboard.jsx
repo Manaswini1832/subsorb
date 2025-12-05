@@ -36,6 +36,7 @@ const Dashboard = () => {
   const makeCollection = async(collecName) => {
     const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_PROD}/api/v1/collections`
     try {
+
         const response = await fetch(backendUrl, {
             method: 'POST',
             body: JSON.stringify({ collectionName: collecName }),
@@ -52,6 +53,7 @@ const Dashboard = () => {
             if (errorMessage.message.toLowerCase().startsWith('duplicate')) {
                 alert('Duplicate collections not allowed')
             } else {
+                console.log(errorMessage)
                 alert(errorMessage)//TODO : handle these gracefully
             }
             return

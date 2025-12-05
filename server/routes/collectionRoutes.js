@@ -70,10 +70,13 @@ router.get('/', authChecker, async (req, res) => {
       res.status(400).json(createErrorObject('Invalid name for a collection'))
       return
     }
+
+    console.log(res.locals)
   
     if(collectionName){
       try {
         if(!res.locals?.authenticated){
+          console.log('Couldnt create collection - no auth')
           res.status(500).json(createErrorObject('Couldn\'t create a collection. Try again later!'))
           return
         }
@@ -102,12 +105,14 @@ router.get('/', authChecker, async (req, res) => {
               },
             },
           );
+
           const { data: supabaseData, error: supabaseError } = await supabase2
                                   .from('Collections')
-                                  .insert({ name: collectionName, 'user_id': res.locals.decoded.sub})
+                                  .insert({ name: collectionName, user_id: res.locals.decoded.payload.sub })
                                   .select()
             
           if(supabaseError){
+            console.log(supabaseError)
             res.status(500).json(createErrorObject(supabaseError))
             return
           }
@@ -116,10 +121,12 @@ router.get('/', authChecker, async (req, res) => {
           return
   
         }else{
+          console.log('Unauthorized to create a collection')
           res.status(401).json(createErrorObject('Unauthorized to create a collection'))
           return
         }
       } catch (error) {
+        console.log('Couldnt create collection - server error')
         res.status(500).json(createErrorObject(error)) // Internal server error (500)
         return
       }
