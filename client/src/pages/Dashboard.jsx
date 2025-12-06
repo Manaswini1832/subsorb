@@ -1,14 +1,14 @@
-import { useEffect, useState } from 'react'
-import { useSession } from '../contexts/userContext'
+import { useEffect, useState } from 'react';
+import { useSession } from '../contexts/userContext';
 import CollectionCard from '../components/CollectionCard';
 import './Dashboard.scss';
-import isAlphaNumeric from '../lib/helper/utils'
+import isAlphaNumeric from '../lib/helper/utils';
 
 const Dashboard = () => {
-  const { session, loading } = useSession()
-  const [collecs, setCollecs] = useState([])
-  const [error, setError] = useState(null)
-  const [formInput, setFormInput] = useState('')
+  const { session, loading } = useSession();
+  const [collecs, setCollecs] = useState([]);
+  const [error, setError] = useState(null);
+  const [formInput, setFormInput] = useState('');
 
   const getCollections = async () => {
     const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_PROD}/api/v1/collections`
@@ -90,18 +90,49 @@ const Dashboard = () => {
     } else {
       setCollecs([]);
     }
-    //console.log("successfully authed to access dashboard");
-  }, [])
+  }, []);
 
   if (!session) {
-    return <p>Unauthorized</p>;
+    return (
+        <div className='dark-container'>
+          <div className='dark-dashboard-collections-container'>
+              <p>Unauthorized to access this page</p>
+          </div>
+        </div>
+      );
   }
 
   if (error) {
-    return <p>Error: {error}</p>;
+    return (
+        <div className='dark-container'>
+          <div className='user-container'>
+            <img src={session?.user?.user_metadata?.picture} alt="profile of the user" />
+            <h2>{session?.user?.user_metadata?.name}'s Dashboard</h2>
+          </div>
+
+          <form className="dashboard-form collection-form" onSubmit={handleSubmit}>
+            <div><label htmlFor='collectionNameInput'>Collection Name :</label></div>
+            <div>
+              <input id='collectionNameInput' type='text' onChange={handleFormChange} value={formInput}/>
+              <button  className='dark-create-btn' type="submit">Create</button>
+            </div>
+          </form>
+
+          <div className='dark-dashboard-collections-container'>
+            <p>ERROR : {error}</p>
+          </div>
+          
+        </div>
+      );
   }
 
-  if (loading) return <p>Loading...</p>;
+  if (loading){
+    <div className='dark-container'>
+      <div className='dark-dashboard-collections-container'>
+          <p>Loading</p>
+      </div>
+    </div>
+  }
 
   return (
     <div className='dark-container'>

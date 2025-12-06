@@ -1,16 +1,16 @@
-import { useEffect, useState } from 'react'
-import { useSession } from '../contexts/userContext'
-import { useParams, useNavigate } from 'react-router-dom'
-import ChannelCard from '../components/ChannelCard'
+import { useEffect, useState } from 'react';
+import { useSession } from '../contexts/userContext';
+import { useParams, useNavigate } from 'react-router-dom';
+import ChannelCard from '../components/ChannelCard';
 import './Collection.scss';
 
 const Collection = () => {
-  const { session, loading } = useSession()
-  const [channels, setChannels] = useState([])
-  const [error, setError] = useState(null)
-  const [formInput, setFormInput] = useState('')
-  const {collectionName} = useParams()
-  const navigate = useNavigate()
+  const { session, loading } = useSession();
+  const [channels, setChannels] = useState([]);
+  const [error, setError] = useState(null);
+  const [formInput, setFormInput] = useState('');
+  const {collectionName} = useParams();
+  const navigate = useNavigate();
 
   const getChannels = async () => {
     if (!session) {
@@ -43,7 +43,6 @@ const Collection = () => {
           setChannels((prev) => [...prev, parsedData])
         }
       }
-      //console.log('Finished')
     } catch (error) {
       setError(error.message)
     }
@@ -132,52 +131,82 @@ const Collection = () => {
 
   useEffect(() => {
     getChannels()
-  }, [])
+  }, []);
   
 
   if (!session) {
-    return <p>Unauthorized</p>;
+    return (
+        <div className='dark-container'>
+          <div className='dark-dashboard-collections-container'>
+              <p>Unauthorized to access this page</p>
+          </div>
+        </div>
+      );
   }
 
   if (error) {
-    return <p>Error: {error}</p>;
+    return (
+      <div className='dark-container'>
+          <div className='collection-top'>
+            <h1>{collectionName}</h1>
+            <button className='pink-go-to-dashboard-btn' onClick={goToDashboard}>Go to dashboard</button>
+          </div>
+
+          <form onSubmit={handleSubmit} className='collection-form'>
+              <div><label htmlFor='channelUrlInput'>Channel URL :</label></div>
+              <div>
+                <input id='channelUrlInput' type='text' onChange={handleFormChange} value={formInput}/>
+                <button className='dark-create-btn' type="submit">Add</button>
+              </div>
+          </form>
+
+          <p>Error : {error}</p>
+      </div>
+    );
   }
 
-  if (loading) return <p>Loading...</p>;
-    return (
-        <div className='dark-container'>
-            <div className='collection-top'>
-              <h1>{collectionName}</h1>
-              <button className='pink-go-to-dashboard-btn' onClick={goToDashboard}>Go to dashboard</button>
-            </div>
-
-            <form onSubmit={handleSubmit} className='collection-form'>
-                <div><label htmlFor='channelUrlInput'>Channel URL :</label></div>
-                <div>
-                  <input id='channelUrlInput' type='text' onChange={handleFormChange} value={formInput}/>
-                  <button className='dark-create-btn' type="submit">Add</button>
-                </div>
-            </form>
-
-            {channels.length === 0 ? (
-              <div className='dark-dashboard-channels-container'>
-                <p>Collection Empty</p>
-              </div>
-            ) : (
-                <div className='dark-dashboard-channels-container'>
-                {channels.map((channel, index) => (
-                    <div key={index}>
-                    <ChannelCard name={channel.items[0].snippet.title} 
-                                 url={`https://www.youtube.com/channel/${channel.items[0].id}`} 
-                                 thumbnail={channel.items[0].snippet.thumbnails.default.url}
-                                 description={channel.items[0].snippet.description}
-                    />
-                    </div>
-                ))}
-                </div>
-            )}
+  if (loading){
+    <div className='dark-container'>
+      <div className='dark-dashboard-collections-container'>
+          <p>Loading</p>
+      </div>
+    </div>
+  }
+  
+  return (
+    <div className='dark-container'>
+        <div className='collection-top'>
+          <h1>{collectionName}</h1>
+          <button className='pink-go-to-dashboard-btn' onClick={goToDashboard}>Go to dashboard</button>
         </div>
-    )
+
+        <form onSubmit={handleSubmit} className='collection-form'>
+            <div><label htmlFor='channelUrlInput'>Channel URL :</label></div>
+            <div>
+              <input id='channelUrlInput' type='text' onChange={handleFormChange} value={formInput}/>
+              <button className='dark-create-btn' type="submit">Add</button>
+            </div>
+        </form>
+
+        {channels.length === 0 ? (
+          <div className='dark-dashboard-channels-container'>
+            <p>Collection Empty</p>
+          </div>
+        ) : (
+            <div className='dark-dashboard-channels-container'>
+            {channels.map((channel, index) => (
+                <div key={index}>
+                <ChannelCard name={channel.items[0].snippet.title} 
+                              url={`https://www.youtube.com/channel/${channel.items[0].id}`} 
+                              thumbnail={channel.items[0].snippet.thumbnails.default.url}
+                              description={channel.items[0].snippet.description}
+                />
+                </div>
+            ))}
+            </div>
+        )}
+    </div>
+  );
 }
 
-export default Collection
+export default Collection;

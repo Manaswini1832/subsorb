@@ -18,7 +18,7 @@ Site live at : [Link](https://subsorb.in/)
 - [x] Fetch channels related to collections from db
   - [x] Parse the channel data to get channel name, description, url
   - [x] Display channel info in Channel card UI component
-- [x] User adds a url to channel on form
+- [x] User adds a url to channel on formr
   - [x] regex to get channelHandle
   - [x] POST to collec-chans
 
