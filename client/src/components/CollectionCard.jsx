@@ -6,7 +6,7 @@ const CollectionCard = (props) => {
     const navigate = useNavigate();
 
     const goToDashboard = (name) => {
-        navigate(`/dashboard/collection/${props.name}`);
+        navigate(`/dashboard/collection/${name}`);
     };
 
     return (

@@ -6,19 +6,21 @@ import { createClient } from '@supabase/supabase-js'
 import dotenv from 'dotenv';
 dotenv.config();
 
-const router = express.Router()
+const router = express.Router();
 
 router.post('/', authChecker, async (req, res) => {
     try {
-      if(!res.locals?.authenticated){
-        res.status(500).json(createErrorObject("Couldn't create channels. Try again later!"))
-        return
-      }
-      if(res.locals.authenticated == true){
+        if(!res.locals?.authenticated){
+          return res
+            .status(401)
+            .json(createErrorObject('Unauthorized: authentication required.'));
+        }
+
         const channelHandle = req.body.channelHandle
         if(!channelHandle || channelHandle == ""){
-          res.status(400).json(createErrorObject('Invalid channel handle'))
-          return
+          return res
+            .status(400)
+            .json(createErrorObject('Invalid channel handle'));
         }
   
         //Call Youtube API
@@ -26,18 +28,24 @@ router.post('/', authChecker, async (req, res) => {
         const { data: ytData, error: ytError } = await axios.get(url);
   
         if (ytError) {
-          res.status(500).json(createErrorObject(ytError))
-          return
+          return res
+            .status(500)
+            .json(createErrorObject(ytError.message));
         }
   
         if(ytData.pageInfo.totalResults == 0){
-          res.status(400).json(createErrorObject('Invalid channel handle'))
-          return
+          return res
+            .status(400)
+            .json(createErrorObject('Invalid channel handle'));
         }
-        const channelDetails = JSON.stringify(ytData)
+        const channelDetails = JSON.stringify(ytData);
         
-        //TODO : handle no token
         const token = req.header('Authorization')?.split(' ')[1];
+        if(!token){
+            return res
+            .status(400)
+            .json(createErrorObject('Missing or invalid authorization token.'));
+        }
 
         let supabaseURL = '';
         let supabase_anon_pub_key = '';
@@ -65,26 +73,24 @@ router.post('/', authChecker, async (req, res) => {
         const { data: supabaseData, error: supabaseError } = await supabase2
           .from('Channels')
           .insert({ handle: channelHandle, details: channelDetails })
-          .select()
+          .select();
   
-        if (supabaseError) {
-          res.status(500).json(createErrorObject(supabaseError))
-          return
+        if(supabaseError){
+            res
+              .status(500)
+              .json(createErrorObject('DATABASE ERROR : ' + supabaseError.message));
+            return;
         }
+    
+        return res
+                  .status(201)
+                  .json(supabaseData);
   
-        res.status(200).json(supabaseData)
-        return
-  
-      }else{
-        const message = createErrorObject("Unauthorized to create channels")
-        res.status(401).json(message)
-        return
-      }
     } catch (error) {
-      const message = createErrorObject(error)
-      res.status(500).json(message) // Internal server error (500)
-      return
+        return res
+              .status(500)
+              .json(createErrorObject('SERVER ERROR : ' + error.message));
     }
-  })
+  });
   
-  export default router
+  export default router;

@@ -1,4 +1,3 @@
-import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 dotenv.config();
 import createErrorObject from '../utils/error.js'
@@ -22,7 +21,7 @@ async function verifyProjectJWT(jwt) {
 }
 
 const authChecker = async (req, res, next) => {
-    console.log('AUTH MIDDLEWARE');
+    //console.log('AUTH MIDDLEWARE');
     const token = req.header('Authorization')?.split(' ')[1];
 
     if (!token) {
@@ -34,24 +33,13 @@ const authChecker = async (req, res, next) => {
         const decoded = await verifyProjectJWT(token);
         res.locals.authenticated = true;
         res.locals.decoded = decoded;
-        console.log('Authed');
+        //console.log('Authed');
         next();
     } catch (err) {
         console.log('JWT verification failed:', err);
         const message = createErrorObject('Invalid token, auth denied!');
-        return res.status(401).json(message);
+        return res.status(400).json(message);
     }
 };
-
-//TO PREVENT OVERLOADING AUTH SERVER
-//UNCOMMENT WHILE DOING ACTUAL MIDDLEWARE TESTING
-// const authChecker = async (req, res, next) => {
-//     console.log("authorized")
-//     res.locals.authenticated = true
-//     res.locals.user = {
-//         id : 'db022c62-cb67-49b5-aa1f-47c9834f927b'
-//     }
-//     next()
-// }
 
 export default authChecker

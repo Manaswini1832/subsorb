@@ -2,7 +2,7 @@ const createErrorObject = (message) => {
     const errorObj = {
         "errorMessage" : message
     }
-    return errorObj
+    return errorObj;
 }
 
-export default createErrorObject
+export default createErrorObject;

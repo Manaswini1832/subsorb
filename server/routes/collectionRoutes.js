@@ -5,18 +5,23 @@ import { createClient } from '@supabase/supabase-js'
 import dotenv from 'dotenv';
 dotenv.config();
 
-const router = express.Router()
+const router = express.Router();
 
 router.get('/', authChecker, async (req, res) => {
     try {
       if(!res.locals?.authenticated){
-        res.status(500).json(createErrorObject('Couldn\'t fetch collections. Try again later!'))
-        return
+        res
+          .status(401)
+          .json(createErrorObject('Unauthorized: authentication required.'))
+        return;
       }
   
-      if(res.locals.authenticated == true){
-        //TODO : handle token errors or null token stuff
         const token = req.header('Authorization')?.split(' ')[1];
+        if(!token){
+          return res
+          .status(400)
+          .json(createErrorObject('Missing or invalid authorization token.'));
+        }
 
         let supabaseURL = '';
         let supabase_anon_pub_key = '';
@@ -43,45 +48,49 @@ router.get('/', authChecker, async (req, res) => {
 
         const { data: supabaseData, error: supabaseError } = await supabase2
                                 .from('Collections')
-                                .select('name')
-                                //.eq('user_id', res.locals.decoded.sub)
+                                .select('name');
                                 
         if(supabaseError){
-          res.status(500).json(createErrorObject(supabaseError))
-          return
+          res
+            .status(500)
+            .json(createErrorObject('DATABASE ERROR : ' + supabaseError.message));
+          return;
         }
   
-        res.status(200).json(supabaseData)
-        return
-      }else{
-        res.status(401).json(createErrorObject('Unauthorized to fetch collections')) //Forbidden. Unauthed users can't fetch collections
-        return
-      }
-    } catch (error) {
-      res.status(500).json(createErrorObject(error))
-      return
+        return res
+                .status(200)
+                .json(supabaseData);
+
+      }catch (error) {
+      return res
+              .status(500)
+              .json(createErrorObject('SERVER ERROR : ' + error.message));
     }
   
-  })
+  });
   
   router.post('/', authChecker, async (req, res) => {
-    const collectionName = req.body.collectionName
-    if(!collectionName){
-      res.status(400).json(createErrorObject('Invalid name for a collection'))
-      return
+    const collectionName = req.body.collectionName;
+    if (!collectionName) { //validate collection name
+      return res
+        .status(400)
+        .json(createErrorObject('Collection name is required.'));
     }
 
-    console.log(res.locals)
-  
-    if(collectionName){
       try {
         if(!res.locals?.authenticated){
-          console.log('Couldnt create collection - no auth')
-          res.status(500).json(createErrorObject('Couldn\'t create a collection. Try again later!'))
-          return
+          res
+            .status(401)
+            .json(createErrorObject('Unauthorized: authentication required.'))
+          return;
         }
-        if(res.locals.authenticated){
+
           const token = req.header('Authorization')?.split(' ')[1];
+          if(!token){
+            return res
+            .status(400)
+            .json(createErrorObject('Missing or invalid authorization token.'));
+          }
 
           let supabaseURL = '';
           let supabase_anon_pub_key = '';
@@ -109,31 +118,25 @@ router.get('/', authChecker, async (req, res) => {
           const { data: supabaseData, error: supabaseError } = await supabase2
                                   .from('Collections')
                                   .insert({ name: collectionName, user_id: res.locals.decoded.payload.sub })
-                                  .select()
+                                  .select();
             
           if(supabaseError){
-            console.log(supabaseError)
-            res.status(500).json(createErrorObject(supabaseError))
-            return
+            res
+              .status(500)
+              .json(createErrorObject('DATABASE ERROR : ' + supabaseError.message));
+            return;
           }
+    
+          return res
+                  .status(201)
+                  .json(supabaseData);
   
-          res.status(200).json(supabaseData)
-          return
-  
-        }else{
-          console.log('Unauthorized to create a collection')
-          res.status(401).json(createErrorObject('Unauthorized to create a collection'))
-          return
-        }
       } catch (error) {
-        console.log('Couldnt create collection - server error')
-        res.status(500).json(createErrorObject(error)) // Internal server error (500)
-        return
+          return res
+              .status(500)
+              .json(createErrorObject('SERVER ERROR : ' + error.message));
       }
-    }else{
-      res.status(400).json(createErrorObject('Invalid name for a collection'))//Bad Request. Can't create undefined collectionNames
-    }
-  })
+  });
   
 
-  export default router
+  export default router;

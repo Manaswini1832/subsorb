@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useSession } from '../contexts/userContext'
 import CollectionCard from '../components/CollectionCard';
 import './Dashboard.scss';
-import {supabase} from '../lib/helper/supabase'
+import isAlphaNumeric from '../lib/helper/utils'
 
 const Dashboard = () => {
   const { session, loading } = useSession()
@@ -34,6 +34,10 @@ const Dashboard = () => {
   }
 
   const makeCollection = async(collecName) => {
+    if(!isAlphaNumeric(collecName)){
+      alert('Invalid collection name. Please use only letters and numbers');
+      return;
+    }
     const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_PROD}/api/v1/collections`
     try {
 
@@ -54,7 +58,7 @@ const Dashboard = () => {
                 alert('Duplicate collections not allowed')
             } else {
                 console.log(errorMessage)
-                alert(errorMessage)//TODO : handle these gracefully
+                alert(errorMessage)
             }
             return
         }
@@ -86,7 +90,7 @@ const Dashboard = () => {
     } else {
       setCollecs([]);
     }
-    console.log("successfully authed to access dashboard");
+    //console.log("successfully authed to access dashboard");
   }, [])
 
   if (!session) {
@@ -120,7 +124,7 @@ const Dashboard = () => {
         <div className='dark-dashboard-collections-container'>
           {collecs.map((collection, index) => (
             <div key={index}>
-              <CollectionCard name={collection.name} />
+              <CollectionCard name={collection.name}/>
             </div>
           ))}
         </div>

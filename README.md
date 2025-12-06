@@ -24,13 +24,13 @@ Site live at : [Link](https://subsorb.in/)
 
 ## Misc
 
-- [ ] Backend response statusCode and json convention check
-- [ ] DB nulls
-- [ ] Finish TODO : Handle errors gracefully parts
+- [x] Backend response statusCode and json convention check
+- [x] DB nulls
+- [x] Finish TODO : Handle errors gracefully parts
 - [x] Domain
-- [ ] remove backend prints
+- [x] remove backend prints
 - [x] DigitalOcean
-- [ ] collection name truncate
+- [x] collection name truncate
 
 - [x] Make new projects(dev, prod)
 - [ ] Document how to restart project
