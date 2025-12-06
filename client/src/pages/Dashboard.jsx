@@ -149,17 +149,20 @@ const Dashboard = () => {
           </div>
         </form>
 
+      <div className='dark-dashboard-collections-container'>
       {collecs.length === 0 ? (
         <p>No collections available.</p>
       ) : (
-        <div className='dark-dashboard-collections-container'>
-          {collecs.map((collection, index) => (
-            <div key={index}>
-              <CollectionCard name={collection.name}/>
-            </div>
-          ))}
-        </div>
+          <div>
+            {collecs.map((collection, index) => (
+              <div key={index}>
+                <CollectionCard name={collection.name}/>
+              </div>
+            ))}
+          </div>
       )}
+
+      </div>
     </div>
   );
 };
