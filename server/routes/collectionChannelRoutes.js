@@ -196,10 +196,8 @@ router.post('/', authChecker, async (req, res) => {
         },
     );
 
-
+    //Get collection 
     let supabaseCollecs, supabaseCollecsError;
-    let supabaseChans, supabaseChansError;
-
     try {
         const result = await supabase2
             .from('Collections')
@@ -213,11 +211,17 @@ router.post('/', authChecker, async (req, res) => {
                 .json(createErrorObject('SERVER ERROR(fetching collections) : ' + error.message));
     }
 
+    //Get channel
+    let supabaseChans, supabaseChansError;
     try {
         const result = await supabase2
             .from('Channels')
             .select()
             .eq('handle', channelHandle);
+        
+        //here if the data is stale(was first created 6months ago, update it)
+
+        console.log("Channel result : ", result);
         supabaseChans = result.data;
         supabaseChansError = result.error;
     } catch (error) {
@@ -247,10 +251,10 @@ router.post('/', authChecker, async (req, res) => {
 
 
         if(supabaseError){
-            res
+            console.log("Error in insertion(database error)");
+            return res
               .status(500)
               .json(createErrorObject('DATABASE ERROR : ' + supabaseError.message));
-            return;
         }
 
         return res
@@ -258,6 +262,8 @@ router.post('/', authChecker, async (req, res) => {
                 .json(supabaseData);
 
     } catch (error) {
+            console.log("Error in insertion(server error)"); //THIS occurs for the first time and then gets sorted after retry. this is by design but handle the error well else it is on console which is bad ux
+            console.log(error.message);
         return res
               .status(500)
               .json(createErrorObject('SERVER ERROR : ' + error.message));

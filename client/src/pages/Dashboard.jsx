@@ -11,7 +11,7 @@ const Dashboard = () => {
   const [formInput, setFormInput] = useState('');
 
   const getCollections = async () => {
-    const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_PROD}/api/v1/collections`
+    const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_DEV}/api/v1/collections`
     
     try {
         const response = await fetch(backendUrl, {
@@ -38,7 +38,7 @@ const Dashboard = () => {
       alert('Invalid collection name. Please use only letters and numbers');
       return;
     }
-    const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_PROD}/api/v1/collections`
+    const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_DEV}/api/v1/collections`
     try {
 
         const response = await fetch(backendUrl, {

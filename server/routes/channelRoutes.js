@@ -70,9 +70,10 @@ router.post('/', authChecker, async (req, res) => {
           },
         );
 
+        const now = new Date().toISOString();
         const { data: supabaseData, error: supabaseError } = await supabase2
           .from('Channels')
-          .insert({ handle: channelHandle, details: channelDetails })
+          .insert({ handle: channelHandle, details: channelDetails, updated_at: now })
           .select();
   
         if(supabaseError){
@@ -87,6 +88,7 @@ router.post('/', authChecker, async (req, res) => {
                   .json(supabaseData);
   
     } catch (error) {
+        console.log("Channel routes issue");
         return res
               .status(500)
               .json(createErrorObject('SERVER ERROR : ' + error.message));
