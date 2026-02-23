@@ -149,6 +149,8 @@ router.get('/:collecName', authChecker, async (req, res) => {
     }
 });
   
+
+let supabaseChans, supabaseChansError;
 router.post('/', authChecker, async (req, res) => {
     const collectionName = req.body.collecName;
     const channelHandle = req.body.channelHandle;
@@ -212,7 +214,7 @@ router.post('/', authChecker, async (req, res) => {
     }
 
     //Get channel
-    let supabaseChans, supabaseChansError;
+    // let supabaseChans, supabaseChansError;
     try {
         const result = await supabase2
             .from('Channels')
@@ -262,8 +264,12 @@ router.post('/', authChecker, async (req, res) => {
                 .json(supabaseData);
 
     } catch (error) {
-            console.log("Error in insertion(server error)"); //THIS occurs for the first time and then gets sorted after retry. this is by design but handle the error well else it is on console which is bad ux
-            console.log(error.message);
+        if(supabaseChans.length === 0){ //channel isn't in db
+            return res
+                   .status(200)
+                   .json({success: false, needsRetry: true});
+        }
+
         return res
               .status(500)
               .json(createErrorObject('SERVER ERROR : ' + error.message));

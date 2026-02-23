@@ -84,13 +84,14 @@ const Collection = () => {
               'Authorization': `Bearer ${session.access_token}`
             }
           })
+
+        const jsonData = await response.json();
         
-        console.log(response)
-        if(!response.ok){
+        if(jsonData.needsRetry){
           makeChannel(handle)
         }
 
-        const jsonData = await response.json()
+        
         for (let index = 0; index < jsonData.length; index++) {
           if(!jsonData[index].Collections || !jsonData[index].Collections.name){
             setChannels([])
