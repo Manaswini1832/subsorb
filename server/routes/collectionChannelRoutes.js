@@ -215,6 +215,7 @@ router.post('/', authChecker, async (req, res) => {
 
     //Get channel
     // let supabaseChans, supabaseChansError;
+    let staleData = false;
     try {
         const result = await supabase2
             .from('Channels')
@@ -222,8 +223,9 @@ router.post('/', authChecker, async (req, res) => {
             .eq('handle', channelHandle);
         
         //here if the data is stale(was first created 6months ago, update it)
+        //console.log(result)
 
-        console.log("Channel result : ", result);
+        // console.log("Channel result : ", result);
         supabaseChans = result.data;
         supabaseChansError = result.error;
     } catch (error) {
@@ -253,6 +255,13 @@ router.post('/', authChecker, async (req, res) => {
 
 
         if(supabaseError){
+            // console.log(supabaseError);
+            if(supabaseError.message == 'duplicate key value violates unique constraint "unique_channels_in_collection_for_a_user"'){
+                    return res
+                           .status(409)
+                           .json({message: "This channel already exists in the collection"});
+
+            }
             console.log("Error in insertion(database error)");
             return res
               .status(500)

@@ -83,14 +83,19 @@ const Collection = () => {
               'Content-Type': 'application/json', 
               'Authorization': `Bearer ${session.access_token}`
             }
-          })
+          });
+
+        if (response.status === 409) {
+          const result = await response.json();
+          alert(result.message);
+          return;
+        }
 
         const jsonData = await response.json();
         
         if(jsonData.needsRetry){
           makeChannel(handle)
         }
-
         
         for (let index = 0; index < jsonData.length; index++) {
           if(!jsonData[index].Collections || !jsonData[index].Collections.name){
