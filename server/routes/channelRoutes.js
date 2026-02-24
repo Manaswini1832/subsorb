@@ -4,6 +4,7 @@ import authChecker from '../middleware/authChecker.js'
 import createErrorObject from '../utils/error.js'
 import { createClient } from '@supabase/supabase-js'
 import dotenv from 'dotenv';
+import getYoutubeChannelDetails from '../utils/getYoutubeChannelDetails.js'
 dotenv.config();
 
 const router = express.Router();
@@ -24,21 +25,24 @@ router.post('/', authChecker, async (req, res) => {
         }
   
         //Call Youtube API
-        const url = `https://youtube.googleapis.com/youtube/v3/channels?part=snippet&forHandle=%40${channelHandle}&key=${process.env.SERVER_YOUTUBE_API_KEY}`
-        const { data: ytData, error: ytError } = await axios.get(url);
-  
-        if (ytError) {
-          return res
-            .status(500)
-            .json(createErrorObject(ytError.message));
+        const ytData = await getYoutubeChannelDetails(channelHandle);
+        if(!ytData.data){
+          return  res
+                  .status(ytData.status)
+                  .json({
+                      success: false,
+                      message: ytData.message,
+                      data: null,
+                      error: ytData.message,
+                      meta: {
+                        timestamp: new Date().toISOString()
+                      }
+                  });
+                  
         }
-  
-        if(ytData.pageInfo.totalResults == 0){
-          return res
-            .status(400)
-            .json(createErrorObject('Invalid channel handle'));
-        }
-        const channelDetails = JSON.stringify(ytData);
+
+        
+        const channelDetails = JSON.stringify(ytData.data);
         
         const token = req.header('Authorization')?.split(' ')[1];
         if(!token){
@@ -85,10 +89,18 @@ router.post('/', authChecker, async (req, res) => {
     
         return res
                   .status(201)
-                  .json(supabaseData);
+                  .json({
+                      success: true,
+                      message: "Channel fetched successfully",
+                      data: supabaseData,
+                      error: null,
+                      meta: {
+                        timestamp: new Date().toISOString()
+                      }
+                  });
   
     } catch (error) {
-        console.log("Channel routes issue");
+        console.log("Channel routes issue, ", error.message);
         return res
               .status(500)
               .json(createErrorObject('SERVER ERROR : ' + error.message));

@@ -223,11 +223,10 @@ router.post('/', authChecker, async (req, res) => {
             .eq('handle', channelHandle);
         
         //here if the data is stale(was first created 6months ago, update it)
-        //console.log(result)
-
-        // console.log("Channel result : ", result);
+        
         supabaseChans = result.data;
         supabaseChansError = result.error;
+        // console.log("Channel result : ", result);
     } catch (error) {
         return res
                 .status(500)

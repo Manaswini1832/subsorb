@@ -43,6 +43,6 @@ Site live at : [Link](https://subsorb.in/)
   - [x] put on do
   - [x] test
 
-- [ ] refactor yt api call into a util function
+- [x] refactor yt api call into a util function
 - [ ] supabase db update rule modify
 - [ ] inside collec-channels route, if stale channel data, call above function and update data
