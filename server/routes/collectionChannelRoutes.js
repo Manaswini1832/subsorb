@@ -2,6 +2,8 @@ import express from 'express'
 import authChecker from '../middleware/authChecker.js'
 import createErrorObject from '../utils/error.js'
 import { createClient } from '@supabase/supabase-js'
+import getYoutubeChannelDetails from '../utils/getYoutubeChannelDetails.js'
+import isStale from '../utils/isStale.js'
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -214,19 +216,39 @@ router.post('/', authChecker, async (req, res) => {
     }
 
     //Get channel
-    // let supabaseChans, supabaseChansError;
-    let staleData = false;
     try {
-        const result = await supabase2
+        const { data, error }  = await supabase2
             .from('Channels')
             .select()
             .eq('handle', channelHandle);
         
+        supabaseChans = data;
+        supabaseChansError = error;
+
         //here if the data is stale(was first created 6months ago, update it)
+        if(supabaseChans && isStale(supabaseChans.updated_at)){
+            //get the data again and update supabase row
+            const ytData = await getYoutubeChannelDetails(channelHandle);
+            if(!ytData.data){
+                throw err;           
+            }
+            const freshChannelDetails = JSON.stringify(ytData.data);
+            //console.log("CHANDEETS REGET : ", freshChannelDetails);
+
+            const { data, error }  = await supabase2
+            .from('Channels')
+            .update({
+                details: freshChannelDetails,
+                updated_at: new Date().toISOString(),
+            })
+            .eq('handle', channelHandle)
+            .select();
+
+            supabaseChans = data;
+            supabaseChansError = error;
+            // console.log("FRESHESSST DATA : ", supabaseChans)
+        }
         
-        supabaseChans = result.data;
-        supabaseChansError = result.error;
-        // console.log("Channel result : ", result);
     } catch (error) {
         return res
                 .status(500)
@@ -254,7 +276,6 @@ router.post('/', authChecker, async (req, res) => {
 
 
         if(supabaseError){
-            // console.log(supabaseError);
             if(supabaseError.message == 'duplicate key value violates unique constraint "unique_channels_in_collection_for_a_user"'){
                     return res
                            .status(409)
@@ -277,7 +298,7 @@ router.post('/', authChecker, async (req, res) => {
                    .status(200)
                    .json({success: false, needsRetry: true});
         }
-
+        
         return res
               .status(500)
               .json(createErrorObject('SERVER ERROR : ' + error.message));
