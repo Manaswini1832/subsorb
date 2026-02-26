@@ -3,7 +3,5 @@
 .dark-container{
   background-color: $dark_bg_color;
   color: $dark_font_color;
-  min-height: 100vh;
-  margin: 0;
-  box-sizing: border-box;
+  min-height: 100%
 }

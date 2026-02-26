@@ -1,9 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500&family=Poppins:wght@200;300;400;600&display=swap');
+@import "./utils/_variables";
 
-body {
+* {
   margin: 0;
-  bottom: 0;
+  padding: 0;
   box-sizing: border-box;
-  font-family: "Montserrat", sans-serif;
-  max-width: 100vw;
+  font-family: "Poppins", sans-serif;
+}
+
+body{
+  background-color: $dark_bg_color;
 }

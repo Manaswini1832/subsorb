@@ -1,3 +1,25 @@
-.dark-home-container{
-    // position: relative;
+.homePage{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    section{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+}
+
+.homePageTitle{
+    padding-top : 80px;
+}
+
+.homePageFeature{
+    padding : 60px 0 10px 0;
+}
+
+.homePageImg{
+    width: 50vw;
 }

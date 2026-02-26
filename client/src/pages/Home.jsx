@@ -23,7 +23,7 @@ const Home = () => {
   if (loading) return <p>Loading...</p>
 
   return(
-    <div className='dark-container dark-home-container'>
+    <div className='homePage dark-container dark-home-container'>
       {session ? 
       (<div>
         You've already logged in
@@ -41,6 +41,7 @@ const Home = () => {
                 fontFamily: 'Montserrat',
                 position: 'fixed',
                 top :'0',
+                left : '0',
                 padding: '20px',
               },
             }
@@ -49,7 +50,19 @@ const Home = () => {
             theme='dark'
             onlyThirdPartyProviders
         />
+          <h1 className = "homePageTitle">Subsorb helps you organize your youtube subscriptions</h1>
+
+          <section>
+            <h4 className="homePageFeature">Add youtube channels to a collection for later reference : </h4>
+            <img className = "homePageImg" src="/CollectionPage.png" alt="" />
+          </section>
+
+          <section>
+            <h4 className="homePageFeature">Organize your channels into multiple collections : </h4>
+            <img className = "homePageImg" src="/dashboard.png" alt="" />
+          </section>
         </div>
+        
       )}
 
       
