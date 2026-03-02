@@ -3,4 +3,5 @@ Site live at : [Link](https://subsorb.in/)
 
 Subsorb can be used to organize your youtube subscriptions by grouping them into various collections
 
-<video src='/subsorb_screen_record.mp4' width=180/>
+<video src='https://github.com/user-attachments/assets/add2cd21-3044-49b1-861f-817e720ea713' width=180></video>
+
