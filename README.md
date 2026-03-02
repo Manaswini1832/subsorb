@@ -3,10 +3,4 @@ Site live at : [Link](https://subsorb.in/)
 
 Subsorb can be used to organize your youtube subscriptions by grouping them into various collections
 
-## Create a collection
-
-![collection_create_screenshot](/client/public/dashboard.png)
-
-## Add a youtube channel to the collection
-
-![channel_add_screenshot](/client/public/CollectionPage.png)
+![Demo screen recording](/subsorb_screen_record.mp4)
