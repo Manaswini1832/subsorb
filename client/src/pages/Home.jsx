@@ -30,7 +30,7 @@ const Home = () => {
         <button className='pink-go-to-dashboard-btn' onClick={goToDashboard}>Go to dashboard</button>
       </div>) : 
       (
-        <div>
+        <div className='homePageContainer'>
           <Auth
             supabaseClient={supabase}
             appearance={{
@@ -51,6 +51,7 @@ const Home = () => {
             onlyThirdPartyProviders
         />
           <h1 className = "homePageTitle">Subsorb helps you organize your youtube subscriptions</h1>
+          <p className = "homePageRequest">Note : Please use a VPN since some ISPs have supabase blocked</p>
           <video src='/subsorb_screen_record.mp4' width="100%" height="400" controls="controls"  autoPlay muted loop/>
 
 
