@@ -51,6 +51,9 @@ const Home = () => {
             onlyThirdPartyProviders
         />
           <h1 className = "homePageTitle">Subsorb helps you organize your youtube subscriptions</h1>
+          <video src='/subsorb_screen_record.mp4' width="100%" height="400" controls="controls"  autoPlay muted loop/>
+
+
 
           <section>
             <h4 className="homePageFeature">Add youtube channels to a collection for later reference : </h4>
