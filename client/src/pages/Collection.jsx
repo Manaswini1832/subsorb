@@ -13,9 +13,9 @@ const Collection = () => {
   const {collectionName} = useParams();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    console.log(channels)
-  }, [channels]);
+  // useEffect(() => {
+  //   console.log(channels)
+  // }, [channels]);
 
   const getChannels = async () => {
     if (!session) {
@@ -43,12 +43,10 @@ const Collection = () => {
           continue
         }
         if(jsonData[index].Collections.name && jsonData[index].Collections.name === collectionName){
-          console.log(jsonData[index].Channels)
           const sanitizedString = jsonData[index].Channels.details.replace(/\n/g, '\\n')
           let parsedData = JSON.parse(sanitizedString)
           parsedData.aiSummary = jsonData[index].Channels.ai_summary;
           parsedData.aiTags = jsonData[index].Channels.ai_tags;
-          console.log("PARSEDDATA : ", parsedData)
           setChannels((prev) => [...prev, parsedData])
         }
       }
@@ -112,12 +110,10 @@ const Collection = () => {
             return
           }
           if(jsonData[index].Collections.name && jsonData[index].Collections.name === collectionName){
-            console.log(jsonData[index].Channels)
             const sanitizedString = jsonData[index].Channels.details.replace(/\n/g, '\\n')
             let parsedData = JSON.parse(sanitizedString)
             parsedData.aiSummary = jsonData[index].Channels.ai_summary;
             parsedData.aiTags = jsonData[index].Channels.ai_tags;
-            console.log("PARSEDDATA : ", parsedData)
             setChannels((prev) => [...prev, parsedData])
           }
         }
