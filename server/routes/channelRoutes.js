@@ -40,8 +40,9 @@ router.post('/', authChecker, async (req, res) => {
                   
         }
 
-        
         const channelDetails = JSON.stringify(ytData.data);
+        const channelDetailsAIData = JSON.stringify(ytData.aiData)
+        const channelDetailsAITags = JSON.stringify(ytData.aiTags)
         
         const token = req.header('Authorization')?.split(' ')[1];
         if(!token){
@@ -55,7 +56,7 @@ router.post('/', authChecker, async (req, res) => {
         const now = new Date().toISOString();
         const { data: supabaseData, error: supabaseError } = await supabase2
           .from('Channels')
-          .insert({ handle: channelHandle, details: channelDetails, updated_at: now })
+          .insert({ handle: channelHandle, details: channelDetails, ai_summary : channelDetailsAIData, ai_tags : channelDetailsAITags, updated_at: now })
           .select();
   
         if(supabaseError){

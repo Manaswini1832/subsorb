@@ -19,11 +19,15 @@
 
 .dark-channelCard-content{
     padding: 10px;
-     p{
+    p{
         margin: 0;
-        padding-bottom: 40px;
+        //padding-bottom: 40px;
         font-size: 20px;
-     }
+    }
+}
+
+.dark-channel-tag-container{
+    display: flex;
 }
 
 .dark-channelCard-button-container{

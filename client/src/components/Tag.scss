@@ -1,0 +1,10 @@
+@import "../utils/_variables";
+
+.tag-container{
+    border-radius: 5px;
+    border-style: solid;
+    border-color: $pink_accent_hover_40;
+    border-width: 1px;
+    overflow-wrap: break-word;
+    margin-right: 10px;
+}

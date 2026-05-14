@@ -3,6 +3,7 @@ import { useSession } from '../contexts/userContext';
 import { useParams, useNavigate } from 'react-router-dom';
 import ChannelCard from '../components/ChannelCard';
 import './Collection.scss';
+import { REALTIME_POSTGRES_CHANGES_LISTEN_EVENT } from '@supabase/supabase-js';
 
 const Collection = () => {
   const { session, loading } = useSession();
@@ -11,6 +12,10 @@ const Collection = () => {
   const [formInput, setFormInput] = useState('');
   const {collectionName} = useParams();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    console.log(channels)
+  }, [channels]);
 
   const getChannels = async () => {
     if (!session) {
@@ -38,8 +43,12 @@ const Collection = () => {
           continue
         }
         if(jsonData[index].Collections.name && jsonData[index].Collections.name === collectionName){
+          console.log(jsonData[index].Channels)
           const sanitizedString = jsonData[index].Channels.details.replace(/\n/g, '\\n')
-          const parsedData = JSON.parse(sanitizedString)
+          let parsedData = JSON.parse(sanitizedString)
+          parsedData.aiSummary = jsonData[index].Channels.ai_summary;
+          parsedData.aiTags = jsonData[index].Channels.ai_tags;
+          console.log("PARSEDDATA : ", parsedData)
           setChannels((prev) => [...prev, parsedData])
         }
       }
@@ -103,8 +112,12 @@ const Collection = () => {
             return
           }
           if(jsonData[index].Collections.name && jsonData[index].Collections.name === collectionName){
+            console.log(jsonData[index].Channels)
             const sanitizedString = jsonData[index].Channels.details.replace(/\n/g, '\\n')
-            const parsedData = JSON.parse(sanitizedString)
+            let parsedData = JSON.parse(sanitizedString)
+            parsedData.aiSummary = jsonData[index].Channels.ai_summary;
+            parsedData.aiTags = jsonData[index].Channels.ai_tags;
+            console.log("PARSEDDATA : ", parsedData)
             setChannels((prev) => [...prev, parsedData])
           }
         }
@@ -207,7 +220,13 @@ const Collection = () => {
                 <ChannelCard name={channel.items[0].snippet.title} 
                               url={`https://www.youtube.com/channel/${channel.items[0].id}`} 
                               thumbnail={channel.items[0].snippet.thumbnails.default.url}
-                              description={channel.items[0].snippet.description}
+                              description={channel.aiSummary !== "" ? channel.aiSummary : channel.items[0].snippet.description}
+                              tags={
+                                typeof channel.aiTags === "string" &&
+                                channel.aiTags.trim() !== ""
+                                  ? JSON.parse(channel.aiTags)
+                                  : []
+                              }
                 />
                 </div>
             ))}

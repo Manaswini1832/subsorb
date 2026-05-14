@@ -30,10 +30,16 @@ router.get('/', authChecker, async (req, res) => {
         const { data: supabaseData, error: supabaseError } = await supabase2
                                 .from('Collection_Channels')
                                 .select(`
-                                            id,
-                                            Collections:collection_id(name) ,
-                                            Channels:channel_id(details)
-                                        `)
+                                    id,
+                                    Collections:collection_id(
+                                        name
+                                    ),
+                                    Channels:channel_id(
+                                        ai_summary,
+                                        ai_tags,
+                                        details
+                                    )
+                                `)
 
         if(supabaseError){
             res
@@ -85,10 +91,16 @@ router.get('/:collecName', authChecker, async (req, res) => {
         const { data: supabaseData, error: supabaseError } = await supabase2
                                 .from('Collection_Channels')
                                 .select(`
-                                            id,
-                                            Collections:collection_id(name) ,
-                                            Channels:channel_id(details)
-                                        `)
+                                    id,
+                                    Collections:collection_id(
+                                        name
+                                    ),
+                                    Channels:channel_id(
+                                        ai_summary,
+                                        ai_tags,
+                                        details
+                                    )
+                                `)
                                 .eq('Collections.name', queryCollection)
 
         if(supabaseError){
@@ -206,8 +218,14 @@ router.post('/', authChecker, async (req, res) => {
             .insert({ collection_id: collectionID, channel_id: channelID })
             .select(`
                 id,
-                Collections:collection_id(name) ,
-                Channels:channel_id(details)
+                Collections:collection_id(
+                    name
+                ),
+                Channels:channel_id(
+                    ai_summary,
+                    ai_tags,
+                    details
+                )
             `)
             .eq('Collections.name', collectionName);
 

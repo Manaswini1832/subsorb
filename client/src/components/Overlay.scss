@@ -22,16 +22,17 @@
     margin: auto;
     z-index: 10;
     padding: 30px 40px;
-    width: 300px;
-    height: fit-content;
+    width: 90vw;
+    // height: fit-content;
     border-radius: 10px;
 
     img{
-        width: 300px;
+        max-width : 300px;
+        width: 60%;
     }
     
     p{
-        font-size: 15px;
+        font-size: 20px;
     }
   }
   
