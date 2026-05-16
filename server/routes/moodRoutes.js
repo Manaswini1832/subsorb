@@ -18,6 +18,7 @@ router.post("/", authChecker, async(req, res) => {
 
         //user input from reqyest body
         const moodInput = req.body.moodInput;
+        console.log("Got mood input : ", moodInput)
         if(!moodInput || moodInput == ""){
           return res
             .status(400)
@@ -43,6 +44,8 @@ router.post("/", authChecker, async(req, res) => {
             model: 'text-embedding-3-small',
         })
 
+        console.log("MoodInputEmbedding : ", openAIResponse.data[0].embedding)
+
         const supabase2 = getSupabaseClient(token); //get token
         const { data: moodInputData } =
             await supabase2.rpc("match_user_channels", {
@@ -53,7 +56,7 @@ router.post("/", authChecker, async(req, res) => {
                 target_user_id: res.locals.decoded.payload.sub
             });
 
-        console.log(openAIResponse.data[0].embedding)
+        console.log("Final search results based on mood : ", openAIResponse.data[0].embedding)
 
         return res
                   .status(201)
