@@ -56,7 +56,7 @@ router.post("/", authChecker, async(req, res) => {
                 target_user_id: res.locals.decoded.payload.sub
             });
 
-        console.log("Final search results based on mood : ", openAIResponse.data[0].embedding)
+        console.log("Final search results based on mood : ", moodInputData)
 
         return res
                   .status(201)
