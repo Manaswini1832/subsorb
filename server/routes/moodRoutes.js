@@ -53,7 +53,7 @@ router.post("/", authChecker, async(req, res) => {
                 target_user_id: res.locals.decoded.payload.sub
             });
 
-        //console.log(openAIResponse.data[0].embedding)
+        console.log(openAIResponse.data[0].embedding)
 
         return res
                   .status(201)
