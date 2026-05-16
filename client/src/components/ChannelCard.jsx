@@ -9,17 +9,12 @@ const ChannelCard = (props) => {
     const [isOpen, setIsOpen] = useState(false)
 
     const toggleOverlay = () => {
-        //console.log('Toggling')
         setIsOpen(!isOpen)
     }
 
     const goToChannel = () => {
         window.location.href = props.url;
     }
-
-    useEffect(() => {
-        console.log(props.description)
-    }, [])
 
     return(
         <div className="dark-channelCard" >

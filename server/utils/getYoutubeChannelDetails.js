@@ -26,17 +26,12 @@ export default async function getYoutubeChannelDetails(channelHandle){
         }
     }
 
-    // console.log(ytData);
-    //call openai api to get channel summary + tags
     const openAIClient = new OpenAI({
         apiKey: process.env.SERVER_OPENAI_API_KEY_PROD,
     });
 
-    // console.log(openAIClient)
-
     const channelDescription =
             ytData.items?.[0]?.snippet?.description || "";
-    //console.log(channelDescription)
 
     const openAIResponse = await openAIClient.responses.create({
         model: "gpt-5.5",

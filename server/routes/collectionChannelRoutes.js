@@ -182,7 +182,6 @@ router.post('/', authChecker, async (req, res) => {
                 throw err;           
             }
             const freshChannelDetails = JSON.stringify(ytData.data);
-            //console.log("CHANDEETS REGET : ", freshChannelDetails);
 
             const { data, error }  = await supabase2
             .from('Channels')
@@ -195,7 +194,6 @@ router.post('/', authChecker, async (req, res) => {
 
             supabaseChans = data;
             supabaseChansError = error;
-            // console.log("FRESHESSST DATA : ", supabaseChans)
         }
         
     } catch (error) {

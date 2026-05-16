@@ -201,14 +201,6 @@ const Collection = () => {
     getChannels()
   }, []);
 
-  useEffect(() => {
-    channels.forEach((chan) => {
-      if(chan.aiSummary == null)
-        console.log(chan)
-    })
-  }, [channels])
-  
-
   if (!session) {
     return (
         <div className='dark-container'>
