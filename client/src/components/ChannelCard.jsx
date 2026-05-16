@@ -43,7 +43,7 @@ const ChannelCard = (props) => {
                         <h2>{props.name}</h2>
                         <p>{props.description}</p>
                         <div className='dark-channel-tag-container'>
-                            {props.tags.map((tag, tagId) => (
+                            {props.tags?.map((tag, tagId) => (
                                 <Tag key={tagId} content={tag}/>
                             ))}
                         </div>

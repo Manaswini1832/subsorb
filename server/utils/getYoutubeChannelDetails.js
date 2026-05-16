@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import axios from 'axios'
 import dotenv from 'dotenv';
+import { channel } from "node:diagnostics_channel";
 dotenv.config();
 
 //call youtube api for youtube channel results
@@ -52,12 +53,25 @@ export default async function getYoutubeChannelDetails(channelHandle){
     });
 
     const aiData = JSON.parse(openAIResponse.output_text);
+    console.log(aiData)
+
+    //create embedding for this youtube channel based on ai generated tags
+    let channelEmbedding = null;
+    if(aiData.tags != null){
+        const embeddingResponse = await openAIClient.embeddings.create({
+            input: aiData.tags,
+            model: 'text-embedding-3-small',
+        });
+
+        channelEmbedding = embeddingResponse.data[0].embedding;
+    }
 
     return {
         status : 200,
         message : 'Successfully fetched youtube channel details',
         data : ytData,
         aiData: aiData.summary,
-        aiTags: aiData.tags
+        aiTags: aiData.tags,
+        channelEmbedding: channelEmbedding
     }
 }

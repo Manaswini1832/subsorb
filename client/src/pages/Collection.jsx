@@ -22,7 +22,7 @@ const Collection = () => {
       return
     }
 
-    const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_PROD}/api/v1/collection-channels/${collectionName}`
+    const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_DEV}/api/v1/collection-channels/${collectionName}`
     try {
         const response = await fetch(backendUrl, {
             method: 'GET',
@@ -52,7 +52,7 @@ const Collection = () => {
                 setTags((prev) =>
                 [...new Set([
                   ...prev,
-                  ...JSON.parse(jsonData[index].Channels.ai_tags)
+                  ...jsonData[index].Channels.ai_tags
                 ])].sort((a, b) => a.localeCompare(b)) //sort for alphab order
               );
             }
@@ -64,7 +64,7 @@ const Collection = () => {
   }
 
   const makeChannel = async(handle) => {
-    const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_PROD}/api/v1/channels`
+    const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_DEV}/api/v1/channels`
     try {
         const response = await fetch(backendUrl, {
             method: 'POST',
@@ -89,7 +89,7 @@ const Collection = () => {
 
   const addChannel = async(collectName, handle) => {
     
-    const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_PROD}/api/v1/collection-channels`
+    const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_DEV}/api/v1/collection-channels`
     try {
         const response = await fetch(backendUrl, {
             method: 'POST',
@@ -129,7 +129,7 @@ const Collection = () => {
                 setTags((prev) =>
                 [...new Set([
                   ...prev,
-                  ...JSON.parse(jsonData[index].Channels.ai_tags)
+                  ...jsonData[index].Channels.ai_tags
                 ])].sort((a, b) => a.localeCompare(b)) //sort for alphab order
               );
             }
@@ -182,17 +182,11 @@ const Collection = () => {
       return;
     }
 
-    const filtered = channels.filter((channel) => {
-      const channelTags =
-        typeof channel.aiTags === "string" &&
-        channel.aiTags.trim() !== ""
-          ? JSON.parse(channel.aiTags)
-          : [];
-
-      return selectedTags.some((tag) =>
-        channelTags.includes(tag)
-      );
-    });
+    const filtered = channels.filter((channel) =>
+      selectedTags.some((tag) =>
+        channel.aiTags?.includes(tag)
+      )
+    );
 
     setFilteredChannels(filtered);
   }, [selectedTags, channels]);
@@ -276,16 +270,14 @@ const Collection = () => {
             <div className='dark-dashboard-channels-container'>
             {filteredChannels.map((channel, index) => (
                 <div key={index}>
-                <ChannelCard name={channel.items[0].snippet.title} 
-                              url={`https://www.youtube.com/channel/${channel.items[0].id}`} 
-                              thumbnail={channel.items[0].snippet.thumbnails.default.url}
-                              description={channel.aiSummary != null ? channel.aiSummary : channel.items[0].snippet.description}
-                              tags={
-                                typeof channel.aiTags === "string" &&
-                                channel.aiTags.trim() !== ""
-                                  ? JSON.parse(channel.aiTags)
-                                  : []
-                              }
+                <ChannelCard
+                  name={channel.items[0].snippet.title}
+                  url={`https://www.youtube.com/channel/${channel.items[0].id}`}
+                  thumbnail={channel.items[0].snippet.thumbnails.default.url}
+                  description={
+                    channel.aiSummary ?? channel.items[0].snippet.description
+                  }
+                  tags={channel.aiTags ?? []}
                 />
                 </div>
             ))}
