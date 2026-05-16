@@ -12,6 +12,7 @@ const Dashboard = () => {
   const [formInput, setFormInput] = useState('');
   const [moodInput, setMoodInput] = useState('');
   const [moodResponse, setMoodResponse] = useState([]);
+  const [showEmptyRecs, setShowEmptyRecs] = useState(true);
 
   const getCollections = async () => {
     const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_PROD}/api/v1/collections`
@@ -100,6 +101,9 @@ const Dashboard = () => {
       const responseJson = await response.json()
       if(responseJson?.data?.length !== 0){
         setMoodResponse(responseJson.data)
+        if(responseJson.data.length === 0){
+          setShowEmptyRecs(true)
+        }
       }
 
     } catch (error) {
@@ -202,6 +206,7 @@ const Dashboard = () => {
               <button className='dark-create-btn' type="submit" onClick={(e) => {
                 e.preventDefault();
                 setMoodResponse([])
+                showEmptyRecs(true)
               }}>Clear mood</button>
             </div>
           </form>
@@ -232,6 +237,8 @@ const Dashboard = () => {
           </div>
         )
       }
+
+      {showEmptyRecs && <p>No mood based recommendations available right now</p>}
 
       <div className='dark-dashboard-collections-container'>
       {collecs.length === 0 ? (
