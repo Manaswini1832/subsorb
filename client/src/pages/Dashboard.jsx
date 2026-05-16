@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useSession } from '../contexts/userContext';
 import CollectionCard from '../components/CollectionCard';
+import ChannelCard from '../components/ChannelCard'
 import './Dashboard.scss';
 import isAlphaNumeric from '../lib/helper/utils';
 
@@ -9,6 +10,8 @@ const Dashboard = () => {
   const [collecs, setCollecs] = useState([]);
   const [error, setError] = useState(null);
   const [formInput, setFormInput] = useState('');
+  const [moodInput, setMoodInput] = useState('');
+  const [moodResponse, setMoodResponse] = useState([]);
 
   const getCollections = async () => {
     const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_DEV}/api/v1/collections`
@@ -74,14 +77,56 @@ const Dashboard = () => {
     }
   }
 
+  const searchMood = async(mood) => {
+    const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_DEV}/api/v1/mood`
+    try {
+      const response = await fetch(backendUrl, {
+        method : 'POST', 
+        body: JSON.stringify({ moodInput : mood }),
+        headers: {
+          'Content-Type': 'application/json', 
+          'Authorization': `Bearer ${session.access_token}`
+        }
+      })
+
+      if (!response.ok) {
+          const errorData = await response.json()
+          const errorMessage = errorData.errorMessage || errorData.message || 'Unknown error'
+          console.log(errorMessage)
+          alert(errorMessage)
+          return
+      }
+
+      const responseJson = await response.json()
+      if(responseJson?.data?.length !== 0){
+        setMoodResponse(responseJson.data)
+      }
+
+    } catch (error) {
+      alert(error)
+    }
+  }
+
   const handleFormChange = (e) => {
     setFormInput(e.target.value)
+  }
+
+  const handleMoodFormChange = (e) => {
+    setMoodInput(e.target.value)
   }
 
   const handleSubmit = (e) => {
     e.preventDefault()
     if(formInput === '') return
     makeCollection(formInput)
+    setFormInput('')
+  }
+
+  const handleMoodSubmit = (e) => {
+    e.preventDefault();
+    if(moodInput === '') return
+    searchMood(moodInput);
+    setMoodInput('')
   }
 
   useEffect(() => {
@@ -149,6 +194,45 @@ const Dashboard = () => {
           </div>
         </form>
 
+        <form className="dashboard-form mood-form">
+            <div><label htmlFor='moodInput'>Enter your mood. Eg: I want to watch book videos</label></div>
+            <div>
+              <input id='moodInput' type='text' onChange={handleMoodFormChange} value={moodInput}/>
+              <button className='dark-create-btn' type="submit" onClick={handleMoodSubmit}>Search</button>
+              <button className='dark-create-btn' type="submit" onClick={(e) => {
+                e.preventDefault();
+                setMoodResponse([])
+              }}>Clear mood</button>
+            </div>
+          </form>
+
+      {
+        moodResponse.length !== 0 && (
+          <div>
+            {moodResponse.map((match, index) => {
+              const parsedDetails = JSON.parse(match.details);
+
+              return (
+                <div key={index}>
+                  <ChannelCard
+                    name={parsedDetails.items[0].snippet.title}
+                    url={`https://www.youtube.com/channel/${parsedDetails.items[0].id}`}
+                    thumbnail={
+                      parsedDetails.items[0].snippet.thumbnails.default.url
+                    }
+                    description={
+                      match.ai_summary ??
+                      parsedDetails.items[0].snippet.description
+                    }
+                    tags={match.ai_tags ?? []}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        )
+      }
+
       <div className='dark-dashboard-collections-container'>
       {collecs.length === 0 ? (
         <p>No collections available.</p>
@@ -161,7 +245,6 @@ const Dashboard = () => {
             ))}
           </div>
       )}
-
       </div>
     </div>
   );

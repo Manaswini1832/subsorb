@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url';
 import collectionRoutes from './routes/collectionRoutes.js'
 import channelRoutes from './routes/channelRoutes.js'
 import collectionChannelRoutes from './routes/collectionChannelRoutes.js'
+import moodRoutes from './routes/moodRoutes.js'
 
 const app = express()
 app.use(cors())
@@ -23,6 +24,7 @@ app.use(express.static(clientBuildPath))
 app.use('/api/v1/collections', collectionRoutes)
 app.use('/api/v1/channels', channelRoutes)
 app.use('/api/v1/collection-channels', collectionChannelRoutes)
+app.use('/api/v1/mood', moodRoutes)
 
 // other routes should serve the frontend
 app.get('*', (req, res) => {

@@ -33,7 +33,7 @@ const authChecker = async (req, res, next) => {
         const decoded = await verifyProjectJWT(token);
         res.locals.authenticated = true;
         res.locals.decoded = decoded;
-        //console.log('Authed');
+        // console.log('Authed');
         next();
     } catch (err) {
         console.log('JWT verification failed:', err);
