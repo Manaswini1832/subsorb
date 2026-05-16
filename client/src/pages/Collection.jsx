@@ -3,26 +3,25 @@ import { useSession } from '../contexts/userContext';
 import { useParams, useNavigate } from 'react-router-dom';
 import ChannelCard from '../components/ChannelCard';
 import './Collection.scss';
-import { REALTIME_POSTGRES_CHANGES_LISTEN_EVENT } from '@supabase/supabase-js';
 
 const Collection = () => {
   const { session, loading } = useSession();
   const [channels, setChannels] = useState([]);
+  const [filteredChannels, setFilteredChannels] = useState([]);
+  const [tags, setTags] = useState([]);
+  const [selectedTags, setSelectedTags] = useState([]);
   const [error, setError] = useState(null);
   const [formInput, setFormInput] = useState('');
   const {collectionName} = useParams();
   const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   console.log(channels)
-  // }, [channels]);
-
   const getChannels = async () => {
     if (!session) {
       setChannels([])
+      setFilteredChannels([])
       return
     }
-    //console.log('called')
+
     const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_PROD}/api/v1/collection-channels/${collectionName}`
     try {
         const response = await fetch(backendUrl, {
@@ -48,6 +47,15 @@ const Collection = () => {
           parsedData.aiSummary = jsonData[index].Channels.ai_summary;
           parsedData.aiTags = jsonData[index].Channels.ai_tags;
           setChannels((prev) => [...prev, parsedData])
+          setFilteredChannels((prev) => [...prev, parsedData])
+          if(jsonData[index].Channels.ai_tags !== null){
+                setTags((prev) =>
+                [...new Set([
+                  ...prev,
+                  ...JSON.parse(jsonData[index].Channels.ai_tags)
+                ])].sort((a, b) => a.localeCompare(b)) //sort for alphab order
+              );
+            }
         }
       }
     } catch (error) {
@@ -107,6 +115,7 @@ const Collection = () => {
         for (let index = 0; index < jsonData.length; index++) {
           if(!jsonData[index].Collections || !jsonData[index].Collections.name){
             setChannels([])
+            setFilteredChannels([])
             return
           }
           if(jsonData[index].Collections.name && jsonData[index].Collections.name === collectionName){
@@ -115,6 +124,15 @@ const Collection = () => {
             parsedData.aiSummary = jsonData[index].Channels.ai_summary;
             parsedData.aiTags = jsonData[index].Channels.ai_tags;
             setChannels((prev) => [...prev, parsedData])
+            setFilteredChannels((prev) => [...prev, parsedData])
+            if(jsonData[index].Channels.ai_tags !== null){
+                setTags((prev) =>
+                [...new Set([
+                  ...prev,
+                  ...JSON.parse(jsonData[index].Channels.ai_tags)
+                ])].sort((a, b) => a.localeCompare(b)) //sort for alphab order
+              );
+            }
           }
         }
 
@@ -146,9 +164,49 @@ const Collection = () => {
     }
   }
 
+  const handleTagSubmit = (e) => {
+    e.preventDefault();
+
+    const value = e.target.value;
+
+    setSelectedTags((prev) =>
+      prev.includes(value) ? 
+      selectedTags.filter((tag) => tag !== value) : 
+      [...prev, value]
+    );
+  };
+
+  useEffect(() => {
+    if (selectedTags.length === 0) {
+      setFilteredChannels(channels);
+      return;
+    }
+
+    const filtered = channels.filter((channel) => {
+      const channelTags =
+        typeof channel.aiTags === "string" &&
+        channel.aiTags.trim() !== ""
+          ? JSON.parse(channel.aiTags)
+          : [];
+
+      return selectedTags.some((tag) =>
+        channelTags.includes(tag)
+      );
+    });
+
+    setFilteredChannels(filtered);
+  }, [selectedTags, channels]);
+
   useEffect(() => {
     getChannels()
   }, []);
+
+  useEffect(() => {
+    channels.forEach((chan) => {
+      if(chan.aiSummary == null)
+        console.log(chan)
+    })
+  }, [channels])
   
 
   if (!session) {
@@ -205,18 +263,31 @@ const Collection = () => {
             </div>
         </form>
 
+        <div className="collection-tags-container">
+          {tags.map((tag, index) => (
+            <button className={`collection-tags-tag ${
+                selectedTags.includes(tag)
+                  ? "collection-tags-tag-selected"
+                  : "collection-tags-tag-unselected"
+              }`} 
+              onClick={handleTagSubmit} key={index} value={tag}>
+              {tag}
+            </button>
+          ))}
+        </div>
+
         {channels.length === 0 ? (
           <div className='dark-dashboard-channels-container'>
             <p>Collection Empty</p>
           </div>
         ) : (
             <div className='dark-dashboard-channels-container'>
-            {channels.map((channel, index) => (
+            {filteredChannels.map((channel, index) => (
                 <div key={index}>
                 <ChannelCard name={channel.items[0].snippet.title} 
                               url={`https://www.youtube.com/channel/${channel.items[0].id}`} 
                               thumbnail={channel.items[0].snippet.thumbnails.default.url}
-                              description={channel.aiSummary !== "" ? channel.aiSummary : channel.items[0].snippet.description}
+                              description={channel.aiSummary != null ? channel.aiSummary : channel.items[0].snippet.description}
                               tags={
                                 typeof channel.aiTags === "string" &&
                                 channel.aiTags.trim() !== ""

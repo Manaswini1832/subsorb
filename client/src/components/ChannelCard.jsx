@@ -6,7 +6,6 @@ import { faPlus, faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-ic
 import Tag from "./Tag"
 
 const ChannelCard = (props) => {
-    const [cleanDescrip, setCleanDescrip] = useState('')
     const [isOpen, setIsOpen] = useState(false)
 
     const toggleOverlay = () => {
@@ -17,7 +16,10 @@ const ChannelCard = (props) => {
     const goToChannel = () => {
         window.location.href = props.url;
     }
-    // onClick={goToChannel}
+
+    useEffect(() => {
+        console.log(props.description)
+    }, [])
 
     return(
         <div className="dark-channelCard" >

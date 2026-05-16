@@ -42,6 +42,38 @@
     }
 }
 
+.collection-tags-container{
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    // align-items: center;
+}
+
+.collection-tags-tag{
+    all: unset;
+    cursor: pointer;
+    padding: 3px 5px;
+    margin: 3px;
+}
+
+.collection-tags-tag:hover {
+    background-color: $pink_accent;
+    color:$light_font_color;
+}
+
+.collection-tags-tag-selected{
+    background-color: $pink_accent;
+    color:$light_font_color;
+}
+
+.collection-tags-tag-unselected{
+    background-color: $dark_bg_color;
+    border-style: solid;
+    border-color: $pink_accent;
+    border-width: 1px;
+    color:$dark_font_color;
+}
+
 .dark-create-btn{
     background-color: $pink_accent;
     color: black;
