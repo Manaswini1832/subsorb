@@ -100,9 +100,8 @@ const Dashboard = () => {
       const responseJson = await response.json()
       if(responseJson?.data?.length !== 0){
         setMoodResponse(responseJson.data)
-        if(responseJson.data.length === 0){
-          alert("No custom recommendations for now! Any channel from the ones you archived would be good enough for the moment:) For better recommendation results in the future, please add more channels to your subsorb")
-        }
+      }else{
+        alert("No custom recommendations for now! Any channel from the ones you archived would be good enough for the moment:) For better recommendation results in the future, please add more channels to your subsorb")
       }
 
     } catch (error) {
