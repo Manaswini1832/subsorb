@@ -12,7 +12,6 @@ const Dashboard = () => {
   const [formInput, setFormInput] = useState('');
   const [moodInput, setMoodInput] = useState('');
   const [moodResponse, setMoodResponse] = useState([]);
-  const [showEmptyRecs, setShowEmptyRecs] = useState(true);
 
   const getCollections = async () => {
     const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_PROD}/api/v1/collections`
@@ -102,7 +101,7 @@ const Dashboard = () => {
       if(responseJson?.data?.length !== 0){
         setMoodResponse(responseJson.data)
         if(responseJson.data.length === 0){
-          setShowEmptyRecs(true)
+          alert("No custom recommendations for now! Any channel from the ones you archived would be good enough for the moment:) For better recommendation results in the future, please add more channels to your subsorb")
         }
       }
 
@@ -206,7 +205,6 @@ const Dashboard = () => {
               <button className='dark-create-btn' type="submit" onClick={(e) => {
                 e.preventDefault();
                 setMoodResponse([])
-                showEmptyRecs(true)
               }}>Clear mood</button>
             </div>
           </form>
@@ -237,8 +235,6 @@ const Dashboard = () => {
           </div>
         )
       }
-
-      {showEmptyRecs && <p>No mood based recommendations available right now</p>}
 
       <div className='dark-dashboard-collections-container'>
       {collecs.length === 0 ? (
