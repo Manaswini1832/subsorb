@@ -3,7 +3,7 @@ import "./Tag.scss"
 const Tag = (props) => {
     return(
         <div className="tag-container" >
-            #{props.content}, 
+            <p>#{props.content}</p> 
         </div>
     )
 }

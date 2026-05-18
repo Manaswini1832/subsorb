@@ -51,8 +51,8 @@ router.post("/", authChecker, async(req, res) => {
             await supabase2.rpc("match_user_channels", {
                 query_embedding:
                     openAIResponse.data[0].embedding,
-                match_threshold : 0.4,
-                match_count: 10,
+                match_threshold : 0.3,
+                match_count: 5,
                 target_user_id: res.locals.decoded.payload.sub
             });
 

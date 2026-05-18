@@ -4,6 +4,8 @@ import CollectionCard from '../components/CollectionCard';
 import ChannelCard from '../components/ChannelCard'
 import './Dashboard.scss';
 import isAlphaNumeric from '../lib/helper/utils';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus, faSearch, faXmark } from '@fortawesome/free-solid-svg-icons'
 
 const Dashboard = () => {
   const { session, loading } = useSession();
@@ -14,7 +16,7 @@ const Dashboard = () => {
   const [moodResponse, setMoodResponse] = useState([]);
 
   const getCollections = async () => {
-    const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_PROD}/api/v1/collections`
+    const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_DEV}/api/v1/collections`
     
     try {
         const response = await fetch(backendUrl, {
@@ -41,7 +43,7 @@ const Dashboard = () => {
       alert('Invalid collection name. Please use only letters and numbers');
       return;
     }
-    const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_PROD}/api/v1/collections`
+    const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_DEV}/api/v1/collections`
     try {
 
         const response = await fetch(backendUrl, {
@@ -78,7 +80,7 @@ const Dashboard = () => {
   }
 
   const searchMood = async(mood) => {
-    const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_PROD}/api/v1/mood`
+    const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_DEV}/api/v1/mood`
     try {
       const response = await fetch(backendUrl, {
         method : 'POST', 
@@ -99,9 +101,10 @@ const Dashboard = () => {
 
       const responseJson = await response.json()
       if(responseJson?.data?.length !== 0){
-        setMoodResponse(responseJson.data)
+        setMoodResponse(responseJson.data.sort((a, b) => b?.similarity - a?.similarity))
       }else{
         alert("No custom recommendations for now! Any channel from the ones you archived would be good enough for the moment:) For better recommendation results in the future, please add more channels to your subsorb")
+        setMoodResponse([])
       }
 
     } catch (error) {
@@ -161,7 +164,9 @@ const Dashboard = () => {
             <div><label htmlFor='collectionNameInput'>Collection Name :</label></div>
             <div>
               <input id='collectionNameInput' type='text' onChange={handleFormChange} value={formInput}/>
-              <button  className='dark-create-btn' type="submit">Create</button>
+              <button  className='dark-create-btn' type="submit">
+                 <FontAwesomeIcon icon={faPlus} />
+              </button>
             </div>
           </form>
 
@@ -192,25 +197,35 @@ const Dashboard = () => {
           <div><label htmlFor='collectionNameInput'>Collection Name :</label></div>
           <div>
             <input id='collectionNameInput' type='text' onChange={handleFormChange} value={formInput}/>
-            <button  className='dark-create-btn' type="submit">Create</button>
+            <button  className='dark-create-btn' type="submit">
+                 <FontAwesomeIcon icon={faPlus} />
+            </button>
           </div>
         </form>
 
         <form className="dashboard-form mood-form">
-            <div><label htmlFor='moodInput'>Enter your mood. Eg: I want to watch book videos</label></div>
+            <div>
+              <label htmlFor='moodInput'>
+                Enter your mood : I want to watch book videos
+              </label>
+            </div>
             <div>
               <input id='moodInput' type='text' onChange={handleMoodFormChange} value={moodInput}/>
-              <button className='dark-create-btn' type="submit" onClick={handleMoodSubmit}>Search</button>
+              <button className='dark-create-btn' type="submit" onClick={handleMoodSubmit}>
+                <FontAwesomeIcon icon={faSearch}/>
+              </button>
               <button className='dark-create-btn' type="submit" onClick={(e) => {
                 e.preventDefault();
                 setMoodResponse([])
-              }}>Clear mood</button>
+              }}>
+                <FontAwesomeIcon icon={faXmark}/>
+              </button>
             </div>
           </form>
 
       {
         moodResponse.length !== 0 && (
-          <div>
+          <div className='moods-container'>
             {moodResponse.map((match, index) => {
               const parsedDetails = JSON.parse(match.details);
 
@@ -227,6 +242,7 @@ const Dashboard = () => {
                       parsedDetails.items[0].snippet.description
                     }
                     tags={match.ai_tags ?? []}
+                    relevance={match.similarity? Math.trunc((match.similarity)*100) : 0}
                   />
                 </div>
               );

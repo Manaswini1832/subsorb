@@ -62,10 +62,15 @@ export default async function getYoutubeChannelDetails(channelHandle){
             ? aiData.tags
             : [];
 
+        //richer contxt
         const embeddingText = `
         ${aiData.summary ?? ""}
 
         ${tags.join(" ")}
+
+        ${channelDescription}
+
+        ${channelHandle}
         `;
 
         const embeddingResponse =

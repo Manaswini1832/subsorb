@@ -54,6 +54,7 @@
     cursor: pointer;
     padding: 3px 5px;
     margin: 3px;
+    opacity: 70%;
 }
 
 .collection-tags-tag:hover {
@@ -67,10 +68,10 @@
 }
 
 .collection-tags-tag-unselected{
-    background-color: $dark_bg_color;
-    border-style: solid;
-    border-color: $pink_accent;
-    border-width: 1px;
+    background-color: #3a4047;
+    // border-style: solid;
+    // border-color: grey;
+    // border-width: 1px;
     color:$dark_font_color;
 }
 
