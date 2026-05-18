@@ -65,6 +65,16 @@ const Home = () => {
             <h4 className="homePageFeature">Organize your channels into multiple collections : </h4>
             <img className = "homePageImg" src="/dashboard.png" alt="" />
           </section>
+
+          <section>
+            <h4 className="homePageFeature">AI generated summaries + searchable tags : </h4>
+            <img className = "homePageImg" src="/searchable_tags.png" alt="" />
+          </section>
+
+          <section>
+            <h4 className="homePageFeature">AI powered mood based channel recommendations with match score : </h4>
+            <img className = "homePageImg" src="/mood_based_recs.png" alt="" />
+          </section>
         </div>
         
       )}
