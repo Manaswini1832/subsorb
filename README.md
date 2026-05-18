@@ -26,9 +26,13 @@ Subsorb can be used to organize your youtube subscriptions by grouping them into
 
 ## Screenshots from the app
 
+Dashboard
 ![Dashboard](client/public/dashboard.png)
-![CollectionPage](client/public/CollectionPage.png)
+
+Collection page with channels, summaries and their searchable tags
 ![SearchableTags](client/public/searchable_tags.png)
+
+Mood based recommendations
 ![MoodBasedRecs](client/public/mood_based_recs.png)
 
 ## Next in the pipeline / Nice to haves
