@@ -38,4 +38,5 @@ Mood based recommendations
 ## Next in the pipeline / Nice to haves
 
 - [ ] fallback on optimized tag search if embedding match unsatisfactory(elasticsearch?)
+- [ ] Export collections as PDF/PNG
 - [ ] quantify speeds, results, cost
