@@ -22,7 +22,7 @@ const Collection = () => {
       return
     }
 
-    const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_DEV}/api/v1/collection-channels/${collectionName}`
+    const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_PROD}/api/v1/collection-channels/${collectionName}`
     try {
       const response = await fetch(backendUrl, {
         method: 'GET',
@@ -64,7 +64,7 @@ const Collection = () => {
   }
 
   const makeChannel = async(handle) => {
-    const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_DEV}/api/v1/channels`
+    const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_PROD}/api/v1/channels`
     try {
         const response = await fetch(backendUrl, {
             method: 'POST',
@@ -94,7 +94,7 @@ const Collection = () => {
 
   const addChannel = async(collectName, handle) => {
     
-    const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_DEV}/api/v1/collection-channels`
+    const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_PROD}/api/v1/collection-channels`
     try {
         const response = await fetch(backendUrl, {
             method: 'POST',
