@@ -4,20 +4,21 @@ import createErrorObject from '../utils/error.js'
 import getSupabaseClient from "../utils/getSupabaseClient.js"
 import OpenAI from "openai";
 import dotenv from 'dotenv';
+import {rateLimiter} from "../middleware/rateLimit.js"
 dotenv.config();
 
 const router = express.Router();
 
-router.post("/", authChecker, async(req, res) => {
+router.post("/", authChecker, rateLimiter, async(req, res) => {
     try {
-        if(!res.locals?.authenticated){
+        if(!res?.locals?.authenticated){
           return res
             .status(401)
             .json(createErrorObject('Unauthorized: authentication required.'));
         }
 
         //user input from reqyest body
-        const moodInput = req.body.moodInput;
+        const moodInput = req?.body?.moodInput;
         console.log("Got mood input : ", moodInput)
         if(!moodInput || moodInput == ""){
           return res
@@ -26,7 +27,7 @@ router.post("/", authChecker, async(req, res) => {
         }
 
         //get token from auth headerr
-        const token = req.header('Authorization')?.split(' ')[1];
+        const token = req?.header('Authorization')?.split(' ')[1];
         if(!token){
             return res
             .status(400)

@@ -9,56 +9,6 @@ dotenv.config();
 
 const router = express.Router()
 
-router.get('/', authChecker, async (req, res) => {
-    try {
-        if(!res.locals?.authenticated){
-          return res
-            .status(401)
-            .json(createErrorObject('Unauthorized: authentication required.'));
-        }
-
-        const token = req.header('Authorization')?.split(' ')[1];
-        if(!token){
-            return res
-            .status(400)
-            .json(createErrorObject('Missing or invalid authorization token.'));
-        }
-
-        const supabase2 = getSupabaseClient(token);
-
-        //if both collection and channel-id are present, 
-        const { data: supabaseData, error: supabaseError } = await supabase2
-                                                                .from('Collection_Channels')
-                                                                .select(`
-                                                                    id,
-                                                                    Collections:collection_id(
-                                                                        name
-                                                                    ),
-                                                                    Channels:channel_id(
-                                                                        ai_summary,
-                                                                        ai_tags,
-                                                                        details
-                                                                    )
-                                                                `)
-
-        if(supabaseError){
-            res
-              .status(500)
-              .json(createErrorObject('DATABASE ERROR : ' + supabaseError.message));
-            return;
-        }
-
-        return res
-                .status(200)
-                .json(supabaseData);
-
-    } catch (error) {
-        return res
-              .status(500)
-              .json(createErrorObject('SERVER ERROR : ' + error.message));
-    }
-});
-
 //get json by collection name
 router.get('/:collecName', authChecker, async (req, res) => {
     try {

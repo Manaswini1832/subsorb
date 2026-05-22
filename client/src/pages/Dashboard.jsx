@@ -92,6 +92,13 @@ const Dashboard = () => {
       })
 
       if (!response.ok) {
+          if(response.statusText === "Too Many Requests"){
+            //rate limiter error
+            alert("You've exhausted getting recommendations for a while. Please try again after a break!")
+            setMoodResponse([])
+            setMoodInput("")
+            return
+          }
           const errorData = await response.json()
           const errorMessage = errorData.errorMessage || errorData.message || 'Unknown error'
           console.log(errorMessage)
