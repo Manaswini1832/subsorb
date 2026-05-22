@@ -76,10 +76,15 @@ const Collection = () => {
           })
 
         if (!response.ok) {
-            const errorData = await response.json()
-            const errorMessage = errorData.errorMessage || errorData.message || 'Unknown error'
-            console.log(errorMessage)
+          if(response.statusText === "Too Many Requests"){
+            //rate limiter error
+            alert("You've exhausted adding channels for a while. Please try again after a break:)")
             return
+          }
+          const errorData = await response.json()
+          const errorMessage = errorData.errorMessage || errorData.message || 'Unknown error'
+          console.log(errorMessage)
+          return
         }
         else addChannel(collectionName, handle)
     } catch (error) {
@@ -192,10 +197,6 @@ const Collection = () => {
 
     setFilteredChannels(filtered);
   }, [selectedTags, channels]);
-
-  useEffect(() => {
-    console.log(channels)
-  }, [channels])
 
   useEffect(() => {
     getChannels()
