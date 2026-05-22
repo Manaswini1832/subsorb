@@ -37,6 +37,16 @@ Mood based recommendations
 
 ## Next in the pipeline / Nice to haves
 
+- [ ] better errors like
+      body: (...)
+      bodyUsed: true
+      headers: Headers {}
+      ok: false
+      redirected: false
+      status:429
+      statusText:"Too Many Requests"
+      type: "cors"
+      url: "http://localhost:5000/api/v1/channels"
 - [ ] fallback on optimized tag search if embedding match unsatisfactory(elasticsearch?)
 - [ ] Export collections as PDF/PNG
 - [ ] quantify speeds, results, cost

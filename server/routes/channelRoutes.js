@@ -4,11 +4,12 @@ import createErrorObject from '../utils/error.js'
 import getSupabaseClient from "../utils/getSupabaseClient.js"
 import dotenv from 'dotenv';
 import getYoutubeChannelDetails from '../utils/getYoutubeChannelDetails.js'
+import {rateLimiter} from "../middleware/rateLimit.js"
 dotenv.config();
 
 const router = express.Router();
 
-router.post('/', authChecker, async (req, res) => {
+router.post('/', authChecker, rateLimiter, async (req, res) => {
     try {
         if(!res?.locals?.authenticated){
           return res
