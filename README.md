@@ -48,6 +48,7 @@ Mood based recommendations
       type: "cors"
       url: "http://localhost:5000/api/v1/channels"
 - [ ] observability and reliable console logging on backend
+- [ ] explore frontend "caching" with useContext/useQuery to prevent db calls on mount frequently
 - [ ] Export collections as PDF/shareable web link
 - [ ] rewrite collecName as collecID for add route
 - [ ] cache makeChan info on redis(?) to avoid db read on addChan retry
