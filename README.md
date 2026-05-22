@@ -1,4 +1,5 @@
 Site live at : [Link](https://subsorb.in/)
+Writeup at : [Link](https://sharp-robin-caa.notion.site/Subsorb-3671560b222380b9b082f2d7962899b0)
 
 Subsorb can be used to organize your youtube subscriptions by grouping them into various collections
 
