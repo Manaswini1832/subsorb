@@ -47,6 +47,15 @@ Mood based recommendations
       statusText:"Too Many Requests"
       type: "cors"
       url: "http://localhost:5000/api/v1/channels"
+- [ ] observability and reliable console logging on backend
+- [ ] Export collections as PDF/shareable web link
+- [ ] rewrite collecName as collecID for add route
+- [ ] cache makeChan info on redis(?) to avoid db read on addChan retry
+- [ ] ctxt state management of collections, channels to avoid db reads frequently
+- [ ] pagination
 - [ ] fallback on optimized tag search if embedding match unsatisfactory(elasticsearch?)
-- [ ] Export collections as PDF/PNG
 - [ ] quantify speeds, results, cost
+- [ ] background worker handles openai embedding work
+- [ ] remove embedding based recs and add mood based taxonomy classification system instead
+- [ ] fuzzy search on channel tags for recs
+- [ ] migrate project to typescript
