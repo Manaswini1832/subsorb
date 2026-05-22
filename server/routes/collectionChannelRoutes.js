@@ -28,18 +28,18 @@ router.get('/', authChecker, async (req, res) => {
 
         //if both collection and channel-id are present, 
         const { data: supabaseData, error: supabaseError } = await supabase2
-                                .from('Collection_Channels')
-                                .select(`
-                                    id,
-                                    Collections:collection_id(
-                                        name
-                                    ),
-                                    Channels:channel_id(
-                                        ai_summary,
-                                        ai_tags,
-                                        details
-                                    )
-                                `)
+                                                                .from('Collection_Channels')
+                                                                .select(`
+                                                                    id,
+                                                                    Collections:collection_id(
+                                                                        name
+                                                                    ),
+                                                                    Channels:channel_id(
+                                                                        ai_summary,
+                                                                        ai_tags,
+                                                                        details
+                                                                    )
+                                                                `)
 
         if(supabaseError){
             res
@@ -63,13 +63,13 @@ router.get('/', authChecker, async (req, res) => {
 router.get('/:collecName', authChecker, async (req, res) => {
     try {
 
-        if(!res.locals?.authenticated){
+        if(!res?.locals?.authenticated){
           return res
             .status(401)
             .json(createErrorObject('Unauthorized: authentication required.'));
         }
 
-        const token = req.header('Authorization')?.split(' ')[1];
+        const token = req?.header('Authorization')?.split(' ')[1];
         if(!token){
             return res
             .status(400)
@@ -79,7 +79,7 @@ router.get('/:collecName', authChecker, async (req, res) => {
         const supabase2 = getSupabaseClient(token);
 
         //if both collection and channel-id are present
-        const queryCollection = req.params.collecName;
+        const queryCollection = req?.params?.collecName;
 
         if(!queryCollection){
             res
@@ -89,26 +89,27 @@ router.get('/:collecName', authChecker, async (req, res) => {
         }
 
         const { data: supabaseData, error: supabaseError } = await supabase2
-                                .from('Collection_Channels')
-                                .select(`
-                                    id,
-                                    Collections:collection_id(
-                                        name
-                                    ),
-                                    Channels:channel_id(
-                                        ai_summary,
-                                        ai_tags,
-                                        details
-                                    )
-                                `)
-                                .eq('Collections.name', queryCollection)
+                                                                .from('Collection_Channels')
+                                                                .select(`
+                                                                    id,
+                                                                    Collections:collection_id(
+                                                                        name
+                                                                    ),
+                                                                    Channels:channel_id(
+                                                                        ai_summary,
+                                                                        ai_tags,
+                                                                        details
+                                                                    )
+                                                                `)
+                                                                .eq('Collections.name', queryCollection)
+                                                                //no filter by user id due to RLS policy already configured on supabase
 
         if(supabaseError){
             res
-              .status(500)
-              .json(createErrorObject('DATABASE ERROR : ' + supabaseError.message));
+                .status(500)
+                .json(createErrorObject('DATABASE ERROR : ' + supabaseError.message));
             return;
-          }
+        }
     
         return res
                   .status(200)
@@ -124,8 +125,14 @@ router.get('/:collecName', authChecker, async (req, res) => {
 
 let supabaseChans, supabaseChansError;
 router.post('/', authChecker, async (req, res) => {
-    const collectionName = req.body.collecName;
-    const channelHandle = req.body.channelHandle;
+    if(!res?.locals?.authenticated){
+        return res
+        .status(401)
+        .json(createErrorObject('Unauthorized: authentication required.'));
+    }
+
+    const collectionName = req?.body?.collecName;
+    const channelHandle = req?.body?.channelHandle;
 
     if(!collectionName || !channelHandle){
         res
@@ -134,13 +141,7 @@ router.post('/', authChecker, async (req, res) => {
         return
     }
 
-    if(!res.locals?.authenticated){
-        return res
-        .status(401)
-        .json(createErrorObject('Unauthorized: authentication required.'));
-    }
-
-    const token = req.header('Authorization')?.split(' ')[1];
+    const token = req?.header('Authorization')?.split(' ')[1];
     if(!token){
         return res
         .status(400)

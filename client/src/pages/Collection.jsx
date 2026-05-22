@@ -22,40 +22,40 @@ const Collection = () => {
       return
     }
 
-    const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_PROD}/api/v1/collection-channels/${collectionName}`
+    const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_DEV}/api/v1/collection-channels/${collectionName}`
     try {
-        const response = await fetch(backendUrl, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json', 
-              'Authorization': `Bearer ${session.access_token}`
-            }
-          })
+      const response = await fetch(backendUrl, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json', 
+          'Authorization': `Bearer ${session.access_token}`
+        }
+      });
+
       if (!response.ok) {
-        throw new Error(`Response status: ${response.status}`)
+        throw new Error(`Response status: ${response.status}`);
       }
 
-      const jsonData = await response.json()
+      const jsonData = await response.json();
 
       for (let index = 0; index < jsonData.length; index++) {
-        if(!jsonData[index].Collections || !jsonData[index].Collections?.name){
-          continue
-        }
-        if(jsonData[index].Collections.name && jsonData[index].Collections.name === collectionName){
-          const sanitizedString = jsonData[index].Channels.details.replace(/\n/g, '\\n')
-          let parsedData = JSON.parse(sanitizedString)
-          parsedData.aiSummary = jsonData[index].Channels.ai_summary;
-          parsedData.aiTags = jsonData[index].Channels.ai_tags;
-          setChannels((prev) => [...prev, parsedData])
-          setFilteredChannels((prev) => [...prev, parsedData])
-          if(jsonData[index].Channels.ai_tags !== null){
-                setTags((prev) =>
-                [...new Set([
-                  ...prev,
-                  ...jsonData[index].Channels.ai_tags
-                ])].sort((a, b) => a.localeCompare(b)) //sort for alphab order
-              );
-            }
+        let item = jsonData[index];
+        if(!item?.Collections?.name || !item?.Channels?.details) continue;
+
+        const sanitizedString = item.Channels.details.replace(/\n/g, '\\n')
+        let parsedData = JSON.parse(sanitizedString)
+
+        parsedData.aiSummary = item.Channels.ai_summary;
+        parsedData.aiTags = item.Channels.ai_tags;
+
+        setChannels((prev) => [...prev, parsedData])
+        setFilteredChannels((prev) => [...prev, parsedData])
+
+        if(item?.Channels?.ai_tags !== null){
+            setTags((prev) =>
+                  [...new Set([...prev,...jsonData[index].Channels.ai_tags
+                  ])].sort((a, b) => a.localeCompare(b)) //sort for alphab order
+          );
         }
       }
     } catch (error) {
@@ -64,7 +64,7 @@ const Collection = () => {
   }
 
   const makeChannel = async(handle) => {
-    const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_PROD}/api/v1/channels`
+    const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_DEV}/api/v1/channels`
     try {
         const response = await fetch(backendUrl, {
             method: 'POST',
@@ -89,7 +89,7 @@ const Collection = () => {
 
   const addChannel = async(collectName, handle) => {
     
-    const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_PROD}/api/v1/collection-channels`
+    const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_DEV}/api/v1/collection-channels`
     try {
         const response = await fetch(backendUrl, {
             method: 'POST',
@@ -113,26 +113,28 @@ const Collection = () => {
         }
         
         for (let index = 0; index < jsonData.length; index++) {
-          if(!jsonData[index].Collections || !jsonData[index].Collections.name){
+          let item = jsonData[index];
+
+          if(!item?.Collections?.name || !item?.Channels?.details){
             setChannels([])
             setFilteredChannels([])
-            return
+            return;
           }
-          if(jsonData[index].Collections.name && jsonData[index].Collections.name === collectionName){
-            const sanitizedString = jsonData[index].Channels.details.replace(/\n/g, '\\n')
-            let parsedData = JSON.parse(sanitizedString)
-            parsedData.aiSummary = jsonData[index].Channels.ai_summary;
-            parsedData.aiTags = jsonData[index].Channels.ai_tags;
-            setChannels((prev) => [...prev, parsedData])
-            setFilteredChannels((prev) => [...prev, parsedData])
-            if(jsonData[index].Channels.ai_tags !== null){
-                setTags((prev) =>
-                [...new Set([
-                  ...prev,
-                  ...jsonData[index].Channels.ai_tags
+          
+          const sanitizedString = item.Channels.details.replace(/\n/g, '\\n')
+          let parsedData = JSON.parse(sanitizedString)
+
+          parsedData.aiSummary = item.Channels.ai_summary;
+          parsedData.aiTags = item.Channels.ai_tags;
+
+          setChannels((prev) => [...prev, parsedData])
+          setFilteredChannels((prev) => [...prev, parsedData])
+
+          if(item.Channels.ai_tags !== null){
+              setTags((prev) =>
+                [...new Set([...prev,...item.Channels.ai_tags
                 ])].sort((a, b) => a.localeCompare(b)) //sort for alphab order
-              );
-            }
+            );
           }
         }
 
@@ -190,6 +192,10 @@ const Collection = () => {
 
     setFilteredChannels(filtered);
   }, [selectedTags, channels]);
+
+  useEffect(() => {
+    console.log(channels)
+  }, [channels])
 
   useEffect(() => {
     getChannels()

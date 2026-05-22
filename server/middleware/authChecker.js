@@ -21,19 +21,19 @@ async function verifyProjectJWT(jwt) {
 }
 
 const authChecker = async (req, res, next) => {
-    //console.log('AUTH MIDDLEWARE');
-    const token = req.header('Authorization')?.split(' ')[1];
+    console.log('AUTH MIDDLEWARE');
+    const token = req?.header('Authorization')?.split(' ')[1]; //aceess tok
 
     if (!token) {
         const message = createErrorObject('No token, auth denied!');
-        return res.status(401).json(message);
+        return res.status(401).json(message); //unauthorized
     }
 
     try {
         const decoded = await verifyProjectJWT(token);
         res.locals.authenticated = true;
         res.locals.decoded = decoded;
-        // console.log('Authed');
+        console.log('Authed');
         next();
     } catch (err) {
         console.log('JWT verification failed:', err);

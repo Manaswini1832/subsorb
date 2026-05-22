@@ -10,13 +10,13 @@ const router = express.Router();
 
 router.post('/', authChecker, async (req, res) => {
     try {
-        if(!res.locals?.authenticated){
+        if(!res?.locals?.authenticated){
           return res
             .status(401)
             .json(createErrorObject('Unauthorized: authentication required.'));
         }
 
-        const channelHandle = req.body.channelHandle
+        const channelHandle = req?.body?.channelHandle
         if(!channelHandle || channelHandle == ""){
           return res
             .status(400)
