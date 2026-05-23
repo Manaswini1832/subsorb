@@ -4,6 +4,7 @@ import createErrorObject from '../utils/error.js'
 import getSupabaseClient from '../utils/getSupabaseClient.js'
 import getYoutubeChannelDetails from '../utils/getYoutubeChannelDetails.js'
 import isStale from '../utils/isStale.js'
+import PDFDocument from 'pdfkit'
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -195,6 +196,172 @@ router.post('/', authChecker, async (req, res) => {
                 .json(createErrorObject('SERVER ERROR : ' + error.message));
     }
 });
+
+router.post('/export-pdf', authChecker, async(req, res) => {
+    try {
+        if(!res?.locals?.authenticated){
+            return res
+                .status(401)
+                .json(createErrorObject('Unauthorized: authentication required.'));
+        }
+
+        const token = req?.header('Authorization')?.split(' ')[1];
+        if(!token){
+            return res
+            .status(400)
+            .json(createErrorObject('Missing or invalid authorization token.'));
+        }
+
+        const decodedToken = JSON.parse(
+            Buffer.from(token.split('.')[1], 'base64').toString()
+        );
+
+        const userName =
+            decodedToken?.user_metadata?.full_name ||
+            decodedToken?.user_metadata?.name ||
+            'User';
+
+        const collectionId = req?.body?.collectionID;
+        const collectionName = req?.body?.collectionName;
+        console.log(collectionId, collectionName)
+        if(!collectionId || collectionId == '' || !collectionName || collectionName == ''){
+            return res  
+                    .status(400)
+                    .json(createErrorObject('Can\'t create PDF for empty collection'))
+        }
+
+        const supabase2 = getSupabaseClient(token);
+        const { data: channels, error: channelsError } = await supabase2
+                                                        .from('Collection_Channels')
+                                                        .select(`
+                                                            id,
+                                                            Collections:collection_id(
+                                                                name
+                                                            ),
+                                                            Channels:channel_id(
+                                                                ai_summary,
+                                                                ai_tags,
+                                                                details
+                                                            )
+                                                        `)
+                                                        .eq('collection_id', collectionId)
+
+        if (channelsError) {
+            return res.status(500).json({
+                message: "Failed to fetch channels",
+            });
+        }
+
+        console.log("CHANNELS: ", channels)
+
+        //new pdf doc
+        const doc = new PDFDocument();
+
+        res.setHeader(
+            "Content-Disposition",
+            `attachment; filename="${collectionName}.pdf"`
+        );
+
+        res.setHeader("Content-Type", "application/pdf");
+
+        doc.pipe(res);
+
+        // title
+        doc.fontSize(24).text(`${userName}'s subsorb collection : ${collectionName}`);
+
+        doc.moveDown();
+
+        // channels
+        channels.forEach((channel, index) => {
+
+            const parsedDetails = JSON.parse(channel?.Channels?.details);
+
+            const item = parsedDetails?.items?.[0];
+
+            const title = item?.snippet?.title || 'Untitled Channel';
+
+            const channelUrl = `https://www.youtube.com/channel/${item?.id}`;
+
+            const youtubeDescription =
+                item?.snippet?.description || '';
+
+            const aiSummary =
+                channel?.Channels?.ai_summary || '';
+
+            const aiTags =
+                channel?.Channels?.ai_tags?.join(', ') || '';
+
+            doc
+                .fontSize(18)
+                .fillColor('black')
+                .text(`${index + 1}. ${title}`);
+
+            doc.moveDown(0.5);
+
+            doc
+                .fontSize(12)
+                .fillColor('blue')
+                .text(channelUrl, {
+                    link: channelUrl,
+                    underline: true,
+                });
+
+            doc.moveDown(0.5);
+
+            // youtube description
+            doc
+                .text(`YouTube Description:`);
+
+            doc
+                .fontSize(11)
+                .fillColor('black')
+                .text(youtubeDescription);
+
+            doc.moveDown(0.5);
+
+            // ai summary
+            doc
+                .fontSize(12)
+                .text(`AI generated Summary:`);
+
+            doc
+                .fontSize(11)
+                .text(aiSummary);
+
+            doc.moveDown(0.5);
+
+            // ai tags
+            doc
+                .fontSize(12)
+                .text(`AI generated Tags:`);
+
+            doc
+                .fontSize(11)
+                .text(aiTags);
+
+            doc.moveDown(2);
+        });
+
+        doc.moveDown(2);
+
+        doc
+        .fontSize(10)
+        .fillColor("gray")
+        .text("Powered by Subsorb", {
+            link: "https://subsorb.in",
+            underline: true,
+            align: "center",
+        });
+
+        doc.end();
+
+
+    } catch (error) {
+        return res
+              .status(500)
+              .json(createErrorObject('SERVER ERROR : ' + error.message));
+    }
+})
   
 
 export default router;

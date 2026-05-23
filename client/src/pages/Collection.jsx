@@ -189,6 +189,38 @@ const Collection = () => {
     );
   };
 
+  const downloadPdf = async () => {
+    const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_DEV}/api/v1/collection-channels/export-pdf`
+      try {
+        const response = await fetch(backendUrl, {
+            method: 'POST',
+            body: JSON.stringify({ collectionName: collectionName, collectionID: collectionID }),
+            headers: {
+              'Content-Type': 'application/json', 
+              'Authorization': `Bearer ${session.access_token}`
+            }
+          })
+
+      if (!response.ok) {
+        throw new Error(`Response status: ${response.status}`)
+      }
+
+      const blob = await response.blob();
+
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+
+      a.href = url;
+      a.download = "collection.pdf";
+
+      a.click();
+
+    } catch (error) {
+      setError(error.message)
+    }
+  };
+
   useEffect(() => {
     if (selectedTags.length === 0) {
       setFilteredChannels(channels);
@@ -251,6 +283,7 @@ const Collection = () => {
     <div className='dark-container'>
         <div className='collection-top'>
           <h1>{collectionName}</h1>
+          <button onClick={downloadPdf}>Download as PDF</button>
           <button className='pink-go-to-dashboard-btn' onClick={goToDashboard}>Go to dashboard</button>
         </div>
 

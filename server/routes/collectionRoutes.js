@@ -107,6 +107,5 @@ router.post('/', authChecker, async (req, res) => {
           .json(createErrorObject('SERVER ERROR : ' + error.message));
   }
 });
-  
 
 export default router;
