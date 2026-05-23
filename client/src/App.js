@@ -21,7 +21,7 @@ const App = () => {
               }
             />
             <Route
-              path="/dashboard/collection/:collectionName"
+              path="/dashboard/collection/:collectionInfo"
               element={
                 <PrivateRoute>
                   <Collection />

@@ -5,12 +5,12 @@ import './CollectionCard.scss'
 const CollectionCard = (props) => {
     const navigate = useNavigate();
 
-    const goToDashboard = (name) => {
-        navigate(`/dashboard/collection/${name}`);
+    const goToDashboard = (name, id) => {
+        navigate(`/dashboard/collection/${name}-${id}`);
     };
 
     return (
-        <div className='dark-collectionCard' onClick={() => goToDashboard(props.name)}>
+        <div className='dark-collectionCard' onClick={() => goToDashboard(props.name, props.id)}>
             <p>{props.name}</p>
         </div>
     )

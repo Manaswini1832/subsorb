@@ -10,7 +10,7 @@ dotenv.config();
 const router = express.Router()
 
 //get json by collection name
-router.get('/:collecName', authChecker, async (req, res) => {
+router.get('/:collectionID', authChecker, async (req, res) => {
     try {
 
         if(!res?.locals?.authenticated){
@@ -29,7 +29,7 @@ router.get('/:collecName', authChecker, async (req, res) => {
         const supabase2 = getSupabaseClient(token);
 
         //if both collection and channel-id are present
-        const queryCollection = req?.params?.collecName;
+        const queryCollection = req?.params?.collectionID;
 
         if(!queryCollection){
             res
@@ -51,7 +51,7 @@ router.get('/:collecName', authChecker, async (req, res) => {
                                                                         details
                                                                     )
                                                                 `)
-                                                                .eq('Collections.name', queryCollection)
+                                                                .eq('Collections.id', queryCollection)
                                                                 //no filter by user id due to RLS policy already configured on supabase
 
         if(supabaseError){
@@ -83,8 +83,11 @@ router.post('/', authChecker, async (req, res) => {
 
     const collectionName = req?.body?.collecName;
     const channelHandle = req?.body?.channelHandle;
+    const collectionID = req?.body?.collecID;
 
-    if(!collectionName || !channelHandle){
+    console.log("POST : ", collectionName, collectionID, channelHandle)
+
+    if(!collectionName || !channelHandle || !collectionID){
         res
             .status(400)
             .json(createErrorObject('Can\'t create a collection-channel with null records'));
@@ -99,21 +102,6 @@ router.post('/', authChecker, async (req, res) => {
     }
 
     const supabase2 = getSupabaseClient(token);
-
-    //Get collection 
-    let supabaseCollecs, supabaseCollecsError;
-    try {
-        const result = await supabase2
-            .from('Collections')
-            .select()
-            .eq('name', collectionName)
-        supabaseCollecs = result.data
-        supabaseCollecsError = result.error
-    } catch (error) {
-        return res
-                .status(500)
-                .json(createErrorObject('SERVER ERROR(fetching collections) : ' + error.message));
-    }
 
     //Get channel
     try {
@@ -153,14 +141,13 @@ router.post('/', authChecker, async (req, res) => {
                 .json(createErrorObject('SERVER ERROR(fetching channels) : ' + error.message));
     }
 
-    if (supabaseCollecsError || supabaseChansError) {
+    if (supabaseChansError) {
         return res
                 .status(500)
-                .json(createErrorObject('Error occurred in fetching collections or channels'));
+                .json(createErrorObject('Error occurred in fetching channels'));
     }
 
     try {
-        const collectionID = supabaseCollecs[0].id;
         const channelID = supabaseChans[0].id;
         const { data: supabaseData, error: supabaseError } = await supabase2
             .from('Collection_Channels')
@@ -176,7 +163,7 @@ router.post('/', authChecker, async (req, res) => {
                     details
                 )
             `)
-            .eq('Collections.name', collectionName);
+            .eq('Collections.id', collectionID);
 
 
         if(supabaseError){
@@ -199,13 +186,13 @@ router.post('/', authChecker, async (req, res) => {
     } catch (error) {
         if(supabaseChans.length === 0){ //channel isn't in db
             return res
-                   .status(200)
-                   .json({success: false, needsRetry: true});
+                    .status(200)
+                    .json({success: false, needsRetry: true});
         }
-        
+            
         return res
-              .status(500)
-              .json(createErrorObject('SERVER ERROR : ' + error.message));
+                .status(500)
+                .json(createErrorObject('SERVER ERROR : ' + error.message));
     }
 });
   

@@ -12,17 +12,23 @@ const Collection = () => {
   const [selectedTags, setSelectedTags] = useState([]);
   const [error, setError] = useState(null);
   const [formInput, setFormInput] = useState('');
-  const {collectionName} = useParams();
+
+  const {collectionInfo} = useParams();
+  const parts = collectionInfo.split('-');
+  const collectionID = parts.pop();
+  const collectionName = parts.join('-');
+  console.log(collectionID, collectionName)
+
   const navigate = useNavigate();
 
-  const getChannels = async () => {
+  const getChannels = async (collecID) => {
     if (!session) {
       setChannels([])
       setFilteredChannels([])
       return
     }
 
-    const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_PROD}/api/v1/collection-channels/${collectionName}`
+    const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_DEV}/api/v1/collection-channels/${collecID}`
     try {
       const response = await fetch(backendUrl, {
         method: 'GET',
@@ -64,7 +70,7 @@ const Collection = () => {
   }
 
   const makeChannel = async(handle) => {
-    const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_PROD}/api/v1/channels`
+    const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_DEV}/api/v1/channels`
     try {
         const response = await fetch(backendUrl, {
             method: 'POST',
@@ -86,19 +92,19 @@ const Collection = () => {
           console.log(errorMessage)
           return
         }
-        else addChannel(collectionName, handle)
+        else addChannel(collectionName, handle, collectionID)
     } catch (error) {
       alert(error)
     }
   }
 
-  const addChannel = async(collectName, handle) => {
+  const addChannel = async(collectName, handle, collectID) => {
     
-    const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_PROD}/api/v1/collection-channels`
+    const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_DEV}/api/v1/collection-channels`
     try {
         const response = await fetch(backendUrl, {
             method: 'POST',
-            body: JSON.stringify({ collecName: collectName, channelHandle: handle }),
+            body: JSON.stringify({ collecName: collectName, channelHandle: handle, collecID: collectID }),
             headers: {
               'Content-Type': 'application/json', 
               'Authorization': `Bearer ${session.access_token}`
@@ -165,7 +171,7 @@ const Collection = () => {
 
     if (match) {
         const handle = match[1]
-        addChannel(collectionName, handle)
+        addChannel(collectionName, handle, collectionID)
     } else {
         alert("Invalid URL")
     }
@@ -199,7 +205,7 @@ const Collection = () => {
   }, [selectedTags, channels]);
 
   useEffect(() => {
-    getChannels()
+    getChannels(collectionID)
   }, []);
 
   if (!session) {

@@ -9,14 +9,14 @@ import { faPlus, faSearch, faXmark } from '@fortawesome/free-solid-svg-icons'
 
 const Dashboard = () => {
   const { session, loading } = useSession();
-  const [collecs, setCollecs] = useState([]);
+  const [collecs, setCollecs] = useState([]); // array of objects : id, created_at, name, user_id
   const [error, setError] = useState(null);
   const [formInput, setFormInput] = useState('');
   const [moodInput, setMoodInput] = useState('');
   const [moodResponse, setMoodResponse] = useState([]);
 
   const getCollections = async () => {
-    const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_PROD}/api/v1/collections`
+    const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_DEV}/api/v1/collections`
     
     try {
         const response = await fetch(backendUrl, {
@@ -80,7 +80,7 @@ const Dashboard = () => {
   }
 
   const searchMood = async(mood) => {
-    const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_PROD}/api/v1/mood`
+    const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_DEV}/api/v1/mood`
     try {
       const response = await fetch(backendUrl, {
         method : 'POST', 
@@ -267,7 +267,7 @@ const Dashboard = () => {
           <div className='dark-dashboard-collections-container'>
             {collecs.map((collection, index) => (
               <div key={index}>
-                <CollectionCard name={collection.name}/>
+                <CollectionCard name={collection.name} id={collection.id}/>
               </div>
             ))}
           </div>

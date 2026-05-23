@@ -27,10 +27,10 @@ router.get('/', authChecker, async (req, res) => {
 
     const { data: supabaseData, error: supabaseError } = await supabase2
                                                           .from('Collections')
-                                                          .select('name');
+                                                          .select()
+                                                          .order('created_at', { ascending: false });
 
-    console.log(supabaseData)
-    console.log(supabaseError)
+    console.log("GET : ", supabaseData)
                             
     if(supabaseError){
       res
@@ -94,6 +94,8 @@ router.post('/', authChecker, async (req, res) => {
           .json(createErrorObject('DATABASE ERROR : ' + supabaseError.message));
         return;
       }
+
+      console.log("POST : ", supabaseData)
 
       return res
               .status(201)
