@@ -80,7 +80,7 @@ const Dashboard = () => {
   }
 
   const searchMood = async(mood) => {
-    const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_DEV}/api/v1/mood`
+    const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_PROD}/api/v1/mood`
     try {
       const response = await fetch(backendUrl, {
         method : 'POST', 

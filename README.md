@@ -1,5 +1,6 @@
 Site live at : [Link](https://subsorb.in/)
 Writeup at : [Link](https://sharp-robin-caa.notion.site/Subsorb-3671560b222380b9b082f2d7962899b0)
+Feedback form " [Link](https://forms.gle/GenM5argJAZ6NYsZ8)
 
 Subsorb can be used to organize your youtube subscriptions by grouping them into various collections
 
@@ -46,7 +47,7 @@ Mood based recommendations
   - [x] logic
   - [x] install kafka on server
   - [x] get async kafka msg queue code running on server
-- [ ] add feedback google form footer
+- [x] add feedback google form
 - [ ] cache makeChan info on redis(?) to avoid db read on addChan retry
 - [ ] fallback on optimized tag search if embedding match unsatisfactory(elasticsearch?)
 - [ ] quantify speeds, results, cost
