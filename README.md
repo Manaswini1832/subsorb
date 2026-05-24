@@ -38,7 +38,7 @@ Mood based recommendations
 
 ## Next in the pipeline / Nice to haves
 
-- [ ] Export collections as PDF/shareable web link
+- [x] Export collections as PDF/shareable web link
 - [x] rewrite collecName as collecID for add route
 - [ ] ctxt state management of collections, channels to avoid db reads frequently
 - [ ] pagination

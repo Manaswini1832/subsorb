@@ -73,7 +73,6 @@ router.get('/:collectionID', authChecker, async (req, res) => {
     }
 });
   
-
 let supabaseChans, supabaseChansError;
 router.post('/', authChecker, async (req, res) => {
     if(!res?.locals?.authenticated){
