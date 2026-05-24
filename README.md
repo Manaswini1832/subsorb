@@ -42,7 +42,10 @@ Mood based recommendations
 - [x] rewrite collecName as collecID for add route
 - [ ] ctxt state management of collections, channels to avoid db reads frequently
 - [ ] pagination
-- [ ] message queue to handle openai embedding work - decreases write latency for channels
+- [x] message queue to handle openai embedding work - decreases write latency for channels
+  - [x] logic
+  - [x] install kafka on server
+  - [x] get async kafka msg queue code running on server
 - [ ] add feedback google form footer
 - [ ] cache makeChan info on redis(?) to avoid db read on addChan retry
 - [ ] fallback on optimized tag search if embedding match unsatisfactory(elasticsearch?)
