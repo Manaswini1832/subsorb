@@ -42,7 +42,8 @@ Mood based recommendations
 - [x] rewrite collecName as collecID for add route
 - [ ] ctxt state management of collections, channels to avoid db reads frequently
 - [ ] pagination
-- [ ] background worker handles openai embedding work
+- [ ] message queue to handle openai embedding work - decreases write latency for channels
+- [ ] add feedback google form footer
 - [ ] cache makeChan info on redis(?) to avoid db read on addChan retry
 - [ ] fallback on optimized tag search if embedding match unsatisfactory(elasticsearch?)
 - [ ] quantify speeds, results, cost

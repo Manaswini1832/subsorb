@@ -1,22 +1,19 @@
 import OpenAI from "openai";
 import axios from 'axios'
 import dotenv from 'dotenv';
+import getSupabaseClient from "./getSupabaseClient.js";
+import {producer} from './kafkaClient.js';
+
 dotenv.config();
 
 //call youtube api for youtube channel results
 //call openai api for summary + tags
 
-export default async function getYoutubeChannelDetails(channelHandle){
+export default async function getYoutubeChannelDetails(channelHandle, token){
     const url = `https://youtube.googleapis.com/youtube/v3/channels?part=snippet&forHandle=%40${channelHandle}&key=${process.env.SERVER_YOUTUBE_API_KEY}`
-    const { data: ytData, error: ytError } = await axios.get(url);
+    const response = await axios.get(url);
 
-    if (ytError) {
-        return {
-            status : 500,
-            message : ytError.message,
-            data : null
-        }
-    }
+    const ytData = response?.data;
 
     if(ytData.pageInfo.totalResults == 0){
         return {
@@ -25,6 +22,8 @@ export default async function getYoutubeChannelDetails(channelHandle){
             data : null
         }
     }
+
+    console.log("YTDATA : ", ytData)
 
     const openAIClient = new OpenAI({
         apiKey: process.env.SERVER_OPENAI_API_KEY_PROD,
@@ -53,41 +52,23 @@ export default async function getYoutubeChannelDetails(channelHandle){
 
     const aiData = JSON.parse(openAIResponse.output_text);
 
-    //create embedding for this youtube channel based on ai generated tags
-    let channelEmbedding = null;
-
-    try {
-        const tags =
-        Array.isArray(aiData.tags)
-            ? aiData.tags
-            : [];
-
-        //richer contxt
-        const embeddingText = `
-        ${aiData.summary ?? ""}
-
-        ${tags.join(" ")}
-
-        ${channelDescription}
-
-        ${channelHandle}
-        `;
-
-        const embeddingResponse =
-        await openAIClient.embeddings.create({
-            input: embeddingText,
-            model: "text-embedding-3-small",
-        });
-
-        channelEmbedding =
-        embeddingResponse.data[0].embedding;
-
-    } catch (err) {
-        console.log(
-        "Embedding generation failed:",
-        err.message
-        );
-    }
+    //put embedding message in kafka queue here
+    //kafka producer
+    await producer.send({
+        topic: 'embedding-topic',
+        messages: [
+            {
+                value: JSON.stringify({
+                    aiTags: Array.isArray(aiData.tags) ? aiData.tags : [],
+                    aiDataSummary: aiData.summary ?? "",
+                    channelDescription,
+                    channelHandle,
+                    token,
+                    retryCount: 0
+                }),
+            },
+        ],
+    });
 
     return {
         status : 200,
@@ -95,6 +76,6 @@ export default async function getYoutubeChannelDetails(channelHandle){
         data : ytData,
         aiData: aiData.summary,
         aiTags: aiData.tags,
-        channelEmbedding: channelEmbedding
+        // channelEmbedding: channelEmbedding
     }
 }

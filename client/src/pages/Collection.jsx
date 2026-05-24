@@ -17,7 +17,6 @@ const Collection = () => {
   const parts = collectionInfo.split('-');
   const collectionID = parts.pop();
   const collectionName = parts.join('-');
-  console.log(collectionID, collectionName)
 
   const navigate = useNavigate();
 

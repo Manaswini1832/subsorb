@@ -116,7 +116,7 @@ router.post('/', authChecker, async (req, res) => {
         //here if the data is stale(was first created 6months ago, update it)
         if(supabaseChans && isStale(supabaseChans.updated_at)){
             //get the data again and update supabase row
-            const ytData = await getYoutubeChannelDetails(channelHandle);
+            const ytData = await getYoutubeChannelDetails(channelHandle, token);
             if(!ytData.data){
                 throw err;           
             }

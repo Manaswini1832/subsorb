@@ -24,8 +24,15 @@ router.post('/', authChecker, rateLimiter, async (req, res) => {
             .json(createErrorObject('Invalid channel handle'));
         }
   
+        const token = req.header('Authorization')?.split(' ')[1];
+        if(!token){
+            return res
+            .status(400)
+            .json(createErrorObject('Missing or invalid authorization token.'));
+        }
+
         //Call Youtube API
-        const ytData = await getYoutubeChannelDetails(channelHandle);
+        const ytData = await getYoutubeChannelDetails(channelHandle, token);
         if(!ytData.data){
           return  res
                   .status(ytData.status)
@@ -47,14 +54,7 @@ router.post('/', authChecker, rateLimiter, async (req, res) => {
           typeof ytData.aiTags === "string"
             ? JSON.parse(ytData.aiTags)
             : ytData.aiTags;
-        const channelEmbedding = ytData.channelEmbedding
-        
-        const token = req.header('Authorization')?.split(' ')[1];
-        if(!token){
-            return res
-            .status(400)
-            .json(createErrorObject('Missing or invalid authorization token.'));
-        }
+        // const channelEmbedding = ytData.channelEmbedding
 
         const supabase2 = getSupabaseClient(token);
 
@@ -66,7 +66,7 @@ router.post('/', authChecker, rateLimiter, async (req, res) => {
             details: channelDetails, 
             ai_summary : channelDetailsAIData, 
             ai_tags : channelDetailsAITags, 
-            embedding: channelEmbedding,
+            // embedding: channelEmbedding,
             updated_at: now })
           .select();
   
@@ -95,6 +95,6 @@ router.post('/', authChecker, rateLimiter, async (req, res) => {
               .status(500)
               .json(createErrorObject('SERVER ERROR : ' + error.message));
     }
-  });
-  
-  export default router;
+});
+
+export default router;
