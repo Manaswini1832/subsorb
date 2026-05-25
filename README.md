@@ -8,23 +8,19 @@ Subsorb can be used to organize your youtube subscriptions by grouping them into
 
 ## Tech stack
 
-- React, Express.js, Node.js, Supabase, DigitalOcean, NGINX, Youtube API, OpenAI LLM-integrations & embeddings
+- React, Express.js, Node.js, Supabase
+- DigitalOcean, NGINX
+- Youtube API, OpenAI LLM-integrations & embeddings
+- Kafka for async load processing
+- Pino for logging
 
-## Features and decisions
-
-- MVP
-  - Can create collections
-  - Can add youtube channels to collections
-    - Cached according to last_updated_at timestamp and cleanup after 6months from that to deal with Youtube API quotas
-- Other features
-  - OpenAI LLM-generated summaries + tags for each channel
-  - Channel tags are searchable in each collection
-  - User mood based recommendations using OpenAI embeddings + cosine similarity match under the hood
-    - Primitive embedding made with ai-summary + tags wasn't a broad enough search space
-    - Optimizations I made for providing helpful results to user :
-      - Provided richer context(embedding with ai-summary + ai tags + channel name + description)
-      - TopK retrieval system with match score percentage shown on every result for better UX
-      - If no matches, shows a helpful alert to the user for better UX
+## Features
+- Users can create collections of YouTube channels and export them as PDFs
+- AI generated summary + tags for each channel
+- Searchable tags for filtering within a collection
+- User's mood based recommendation system
+- Observable backend with Pino
+- Lesser write latency with Kafka(channel embedding)
 
 ## Screenshots from the app
 
@@ -38,7 +34,8 @@ Mood based recommendations
 ![MoodBasedRecs](client/public/mood_based_recs.png)
 
 ## Next in the pipeline / Nice to haves
-
+- [ ] why isstale when no chan?
+- [ ] Add otel times -> prometheus -> grafana?
 - [x] Export collections as PDF/shareable web link
 - [x] rewrite collecName as collecID for add route
 - [ ] ctxt state management of collections, channels to avoid db reads frequently
