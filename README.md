@@ -35,6 +35,7 @@ Mood based recommendations
 
 ## Next in the pipeline / Nice to haves
 - [ ] why isstale when no chan?
+- [ ] Update screenshots, video on readme
 - [ ] Add otel times -> prometheus -> grafana?
 - [x] Export collections as PDF/shareable web link
 - [x] rewrite collecName as collecID for add route
