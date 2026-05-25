@@ -50,8 +50,6 @@ Mood based recommendations
 - [x] add feedback google form
 - [ ] cache makeChan info on redis(?) to avoid db read on addChan retry
 - [ ] fallback on optimized tag search if embedding match unsatisfactory(elasticsearch?)
-- [ ] quantify speeds, results, cost
-- [ ] migrate project to typescript
 - [ ] better errors like
       body: (...)
       bodyUsed: true
@@ -62,5 +60,7 @@ Mood based recommendations
       statusText:"Too Many Requests"
       type: "cors"
       url: "http://localhost:5000/api/v1/channels"
-- [ ] observability and reliable console logging on backend
+- [x] observability and reliable console logging on backend
+  - [ ] quantify speeds, results, cost
 - [ ] remove embedding based recs and add mood based taxonomy classification system instead
+- [ ] migrate project to typescript

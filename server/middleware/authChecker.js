@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 import createErrorObject from '../utils/error.js'
 import { jwtVerify, createRemoteJWKSet } from 'jose'
+import logger from '../utils/logger.js'
 
 
 let JWKS_URL = '';
@@ -21,11 +22,12 @@ async function verifyProjectJWT(jwt) {
 }
 
 const authChecker = async (req, res, next) => {
-    console.log('AUTH MIDDLEWARE');
+    logger.debug('Authentication middleware');
     const token = req?.header('Authorization')?.split(' ')[1]; //aceess tok
 
     if (!token) {
         const message = createErrorObject('No token, auth denied!');
+        logger.error('No token, auth denied!')
         return res.status(401).json(message); //unauthorized
     }
 
@@ -33,10 +35,10 @@ const authChecker = async (req, res, next) => {
         const decoded = await verifyProjectJWT(token);
         res.locals.authenticated = true;
         res.locals.decoded = decoded;
-        console.log('Authed');
+        logger.debug('Successfully authenticated user with id : ' + decoded?.payload?.sub);
         next();
     } catch (err) {
-        console.log('JWT verification failed:', err);
+        logger.error('JWT verification failed:', err);
         const message = createErrorObject('Invalid token, auth denied!');
         return res.status(400).json(message);
     }

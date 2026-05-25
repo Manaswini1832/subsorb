@@ -1,56 +1,131 @@
-import express from 'express'
-import cors from 'cors'
+import express from 'express';
+import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-import collectionRoutes from './routes/collectionRoutes.js'
-import channelRoutes from './routes/channelRoutes.js'
-import collectionChannelRoutes from './routes/collectionChannelRoutes.js'
-import moodRoutes from './routes/moodRoutes.js'
+import collectionRoutes from './routes/collectionRoutes.js';
+import channelRoutes from './routes/channelRoutes.js';
+import collectionChannelRoutes from './routes/collectionChannelRoutes.js';
+import moodRoutes from './routes/moodRoutes.js';
 
-import { producer, consumer } from "./utils/kafkaClient.js";
+import logger from './utils/logger.js';
+
+import { producer, consumer } from './utils/kafkaClient.js';
 import startEmbeddingConsumer from './utils/startEmbeddingConsumer.js';
 
+const app = express();
 
-const app = express()
+const PORT = process.env.SERVER_PORT || 5000;
 
-async function startServer() {
-  await producer.connect(); //global kafka producer
-  await consumer.connect(); //global kafka consumer
+/*
+|--------------------------------------------------------------------------
+| Express Middleware
+|--------------------------------------------------------------------------
+*/
 
-  await consumer.subscribe({
-    topic: 'embedding-topic',
-    fromBeginning: false,
-  });
+app.use(cors());
+app.use(express.json());
 
-  await startEmbeddingConsumer(); //kafka consumer that does openai chan embedding
+/*
+|--------------------------------------------------------------------------
+| Static Frontend
+|--------------------------------------------------------------------------
+*/
 
-  app.use(cors())
-  app.use(express.json())
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-  const __filename = fileURLToPath(import.meta.url);
-  const __dirname = path.dirname(__filename);
-  const clientBuildPath = path.join(__dirname, '..', 'client', 'build');
+const clientBuildPath = path.join(__dirname, '..', 'client', 'build');
 
+app.use(express.static(clientBuildPath));
 
-  //serve frontend static files
-  app.use(express.static(clientBuildPath))
+/*
+|--------------------------------------------------------------------------
+| Routes
+|--------------------------------------------------------------------------
+*/
 
+app.use('/api/v1/collections', collectionRoutes);
+app.use('/api/v1/channels', channelRoutes);
+app.use('/api/v1/collection-channels', collectionChannelRoutes);
+app.use('/api/v1/mood', moodRoutes);
 
-  app.use('/api/v1/collections', collectionRoutes)
-  app.use('/api/v1/channels', channelRoutes)
-  app.use('/api/v1/collection-channels', collectionChannelRoutes)
-  app.use('/api/v1/mood', moodRoutes)
+/*
+|--------------------------------------------------------------------------
+| React Fallback Route
+|--------------------------------------------------------------------------
+*/
 
-  // other routes should serve the frontend
-  app.get('*', (req, res) => {
-      res.sendFile(path.join(clientBuildPath, 'index.html'));
-    });
+app.get('*', (req, res) => {
+  res.sendFile(path.join(clientBuildPath, 'index.html'));
+});
 
-  app.listen(process.env.SERVER_PORT, () => {
-      console.log("App listening")
-  })
+/*
+|--------------------------------------------------------------------------
+| Global Error Handlers
+|--------------------------------------------------------------------------
+*/
 
+process.on('unhandledRejection', (err) => {
+  logger.error('Unhandled Rejection:', err);
+});
+
+process.on('uncaughtException', (err) => {
+  logger.error('Uncaught Exception:', err);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Kafka Connection With Retry
+|--------------------------------------------------------------------------
+*/
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+async function connectKafka() {
+  while (true) {
+    try {
+      logger.info('Connecting Kafka producer...');
+      await producer.connect();
+
+      logger.info('Kafka producer connected');
+
+      logger.info('Connecting Kafka consumer...');
+      await consumer.connect();
+
+      logger.info('Kafka consumer connected');
+
+      await consumer.subscribe({
+        topic: 'embedding-topic',
+        fromBeginning: false,
+      });
+
+      logger.info('Kafka consumer subscribed');
+
+      startEmbeddingConsumer();
+
+      logger.info('Embedding consumer started');
+
+      break;
+    } catch (error) {
+      logger.error('Kafka startup failed:', error);
+
+      logger.info('Retrying Kafka connection in 5 seconds...');
+
+      await sleep(5000);
+    }
+  }
 }
 
-startServer();
+/*
+|--------------------------------------------------------------------------
+| Start Server
+|--------------------------------------------------------------------------
+*/
+
+app.listen(PORT, () => {
+  logger.info(`Server running on port ${PORT}`);
+
+  // Start Kafka in background
+  connectKafka();
+});

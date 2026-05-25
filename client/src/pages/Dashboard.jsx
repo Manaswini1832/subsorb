@@ -27,6 +27,7 @@ const Dashboard = () => {
             }
           })
 
+      console.log(response)
       if (!response.ok) {
         throw new Error(`Response status: ${response.status}`)
       }

@@ -3,6 +3,7 @@ import OpenAI from 'openai';
 
 import { consumer, producer } from './kafkaClient.js';
 import getSupabaseClient from './getSupabaseClient.js';
+import logger from './logger.js';
 
 dotenv.config();
 
@@ -25,7 +26,7 @@ export default async function startEmbeddingConsumer() {
     await consumer.run({
         eachMessage: async ({ message }) => {
 
-            console.log("KAFKA CONSUMER");
+            logger.info('Hi I am the Kafka consumer');
 
             const parsedMessage = JSON.parse(
                 message.value.toString()
@@ -48,6 +49,8 @@ export default async function startEmbeddingConsumer() {
                         input: embeddingText,
                         model: "text-embedding-3-small",
                     });
+                
+                logger.info('I have created a successful channel embedding for channel : ' + parsedMessage?.channelHandle);
 
                 const channelEmbedding =
                     embeddingResponse.data[0].embedding;
@@ -75,13 +78,12 @@ export default async function startEmbeddingConsumer() {
                     throw new Error(error.message);
                 }
 
-                console.log("Embedding stored");
+
+                logger.info("I successfully stored the channel embedding");
+                logger.info("Bye from Kafka Consumer");
 
             } catch (err) {
-                console.log(
-                    "Embedding generation failed:",
-                    err.message
-                );
+                logger.error('I failed to update channel record with embedding information : ' + err.message);
             }
         },
     });

@@ -3,6 +3,7 @@ import axios from 'axios'
 import dotenv from 'dotenv';
 import getSupabaseClient from "./getSupabaseClient.js";
 import {producer} from './kafkaClient.js';
+import logger from './logger.js';
 
 dotenv.config();
 
@@ -10,12 +11,14 @@ dotenv.config();
 //call openai api for summary + tags
 
 export default async function getYoutubeChannelDetails(channelHandle, token){
+    logger.info('Getting youtube channel details for the handle : ' + channelHandle)
     const url = `https://youtube.googleapis.com/youtube/v3/channels?part=snippet&forHandle=%40${channelHandle}&key=${process.env.SERVER_YOUTUBE_API_KEY}`
     const response = await axios.get(url);
 
     const ytData = response?.data;
 
     if(ytData.pageInfo.totalResults == 0){
+        logger.error('User entered an invalid channel handle. Can\'t fetch channel from YouTube');
         return {
             status : 400,
             message : 'Invalid channel handle',
@@ -23,7 +26,7 @@ export default async function getYoutubeChannelDetails(channelHandle, token){
         }
     }
 
-    console.log("YTDATA : ", ytData)
+    logger.info('Channel details for handle : ' + channelHandle + ' fetched successfully');
 
     const openAIClient = new OpenAI({
         apiKey: process.env.SERVER_OPENAI_API_KEY_PROD,
@@ -32,6 +35,7 @@ export default async function getYoutubeChannelDetails(channelHandle, token){
     const channelDescription =
             ytData.items?.[0]?.snippet?.description || "";
 
+    logger.info('Calling OpenAI LLM API with details of channel : ' + channelHandle);
     const openAIResponse = await openAIClient.responses.create({
         model: "gpt-5.5",
         input: `
@@ -54,6 +58,7 @@ export default async function getYoutubeChannelDetails(channelHandle, token){
 
     //put embedding message in kafka queue here
     //kafka producer
+    logger.info('Sending channel : ' + channelHandle + ' openAI data to kafka producer for async embedding');
     await producer.send({
         topic: 'embedding-topic',
         messages: [
@@ -70,6 +75,7 @@ export default async function getYoutubeChannelDetails(channelHandle, token){
         ],
     });
 
+    
     return {
         status : 200,
         message : 'Successfully fetched youtube channel details',
