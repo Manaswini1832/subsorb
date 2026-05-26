@@ -84,11 +84,11 @@ router.post('/', authChecker, async (req, res) => {
       }
 
       const collectionName = req?.body?.collectionName;
-      if (!collectionName) {
-        logger.error('User : ' + userId + ' tried to add collection with an empty name')
+      if (!collectionName || collectionName.length > 50) {
+        logger.error('User : ' + userId + ' tried to create invalid collection')
         return res
           .status(400)
-          .json(createErrorObject('Collection name is required.'));
+          .json(createErrorObject('Invalid collection name'));
       }
 
       logger.info('User : ' + userId + ' is adding a collection with name = ' + collectionName);

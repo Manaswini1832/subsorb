@@ -165,7 +165,9 @@ const Collection = () => {
     e.preventDefault()
     if(formInput === '') return
 
-    const regex = /@([^/?]+)/
+    // const regex = /@([^/?]+)/
+    // const regex =
+  const regex = /^(?:https?:\/\/)?(?:www\.)?youtube\.com\/(?:@([a-zA-Z0-9._-]+)|channel\/([a-zA-Z0-9_-]+)|c\/([a-zA-Z0-9._-]+)|user\/([a-zA-Z0-9._-]+))\/?$/
     const match = formInput.match(regex)
 
     if (match) {

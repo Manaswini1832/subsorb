@@ -27,7 +27,6 @@ const Dashboard = () => {
             }
           })
 
-      console.log(response)
       if (!response.ok) {
         throw new Error(`Response status: ${response.status}`)
       }
@@ -173,7 +172,7 @@ const Dashboard = () => {
           <form className="dashboard-form collection-form" onSubmit={handleSubmit}>
             <div><label htmlFor='collectionNameInput'>Collection Name :</label></div>
             <div>
-              <input id='collectionNameInput' type='text' onChange={handleFormChange} value={formInput}/>
+              <input id='collectionNameInput' type='text' onChange={handleFormChange} value={formInput} maxLength={50}/>
               <button  className='dark-create-btn' type="submit">
                  <FontAwesomeIcon icon={faPlus} />
               </button>
@@ -220,7 +219,7 @@ const Dashboard = () => {
               </label>
             </div>
             <div>
-              <input id='moodInput' type='text' onChange={handleMoodFormChange} value={moodInput}/>
+              <input id='moodInput' type='text' onChange={handleMoodFormChange} value={moodInput} maxLength={200}/>
               <button className='dark-create-btn' type="submit" onClick={handleMoodSubmit}>
                 <FontAwesomeIcon icon={faSearch}/>
               </button>

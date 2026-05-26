@@ -31,7 +31,7 @@ router.post("/", authChecker, rateLimiter, async(req, res) => {
         //user input from reqyest body
         const moodInput = req?.body?.moodInput;
         
-        if(!moodInput || moodInput == ""){
+        if(!moodInput || moodInput == "" || moodInput.length > 200){
         logger.error('User : ' + res?.locals?.decoded?.payload?.sub + ' asked for empty rec');
           return res
             .status(400)
