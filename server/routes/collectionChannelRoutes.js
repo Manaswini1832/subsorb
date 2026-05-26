@@ -123,8 +123,14 @@ router.post('/', authChecker, async (req, res) => {
         supabaseChans = data;
         supabaseChansError = error;
 
+        // console.log(supabaseChans)
+
         //here if the data is stale(was first created 6months ago, update it)
-        if(supabaseChans && isStale(supabaseChans.updated_at)){
+        if (
+            Array.isArray(supabaseChans) &&
+            supabaseChans.length > 0 &&
+            isStale(supabaseChans[0].updated_at)
+        ){
             //get the data again and update supabase row
             logger.info('Channel data stale so refetching initiated');
             const ytData = await getYoutubeChannelDetails(channelHandle, token);
