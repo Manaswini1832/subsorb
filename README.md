@@ -34,20 +34,21 @@ Mood based recommendations
 ![MoodBasedRecs](client/public/mood_based_recs.png)
 
 ## Next in the pipeline / Nice to haves
-- [ ] why isstale when no chan?
+- [x] why isstale when no chan?
 - [ ] Update screenshots, video on readme
 - [ ] Add otel times -> prometheus -> grafana?
-- [x] Export collections as PDF/shareable web link
-- [x] rewrite collecName as collecID for add route
 - [ ] ctxt state management of collections, channels to avoid db reads frequently
 - [ ] pagination
+- [ ] cache makeChan info on redis(?) to avoid db read on addChan retry
+- [ ] fallback on optimized tag search if embedding match unsatisfactory(elasticsearch?)
+- [x] Export collections as PDF
+- [ ] If export collections as shareable web link? implement RBAC
+- [x] rewrite collecName as collecID for add route
 - [x] message queue to handle openai embedding work - decreases write latency for channels
   - [x] logic
   - [x] install kafka on server
   - [x] get async kafka msg queue code running on server
 - [x] add feedback google form
-- [ ] cache makeChan info on redis(?) to avoid db read on addChan retry
-- [ ] fallback on optimized tag search if embedding match unsatisfactory(elasticsearch?)
 - [ ] better errors like
       body: (...)
       bodyUsed: true
