@@ -1,10 +1,8 @@
-Site live at : [Link](https://subsorb.in/)
-Writeup at : [Link](https://sharp-robin-caa.notion.site/Subsorb-3671560b222380b9b082f2d7962899b0)
-Feedback form " [Link](https://forms.gle/GenM5argJAZ6NYsZ8)
+- Site live at : [Link](https://subsorb.in/)
+- Writeup at : [Link](https://sharp-robin-caa.notion.site/Subsorb-3671560b222380b9b082f2d7962899b0)
+- Feedback form : [Link](https://forms.gle/GenM5argJAZ6NYsZ8)
 
 Subsorb can be used to organize your youtube subscriptions by grouping them into various collections
-
-<video src='https://github.com/user-attachments/assets/add2cd21-3044-49b1-861f-817e720ea713' width=180></video>
 
 ## Tech stack
 
@@ -15,6 +13,7 @@ Subsorb can be used to organize your youtube subscriptions by grouping them into
 - Pino for logging
 
 ## Features
+
 - Users can create collections of YouTube channels and export them as PDFs
 - AI generated summary + tags for each channel
 - Searchable tags for filtering within a collection
@@ -24,16 +23,12 @@ Subsorb can be used to organize your youtube subscriptions by grouping them into
 
 ## Screenshots from the app
 
-Dashboard
-![Dashboard](client/public/dashboard.png)
+![Searchable tag collections](client/public/app_screenshots/subsorb_collection_tag_search.png)
 
-Collection page with channels, summaries and their searchable tags
-![SearchableTags](client/public/searchable_tags.png)
-
-Mood based recommendations
-![MoodBasedRecs](client/public/mood_based_recs.png)
+![Mood based recommendations](client/public/app_screenshots/subsorb_mood_recs.png)
 
 ## Next in the pipeline / Nice to haves
+
 - [x] why isstale when no chan?
 - [ ] Update screenshots, video on readme
 - [ ] Add otel times -> prometheus -> grafana?

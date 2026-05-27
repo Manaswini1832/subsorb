@@ -1,3 +1,5 @@
+@import "../utils/_variables";
+
 .homePage{
     display: flex;
     flex-direction: column;
@@ -6,24 +8,49 @@
 
     section{
         display: flex;
-        flex-direction: column;
-        justify-content: center;
+        // flex-direction: column;
+        justify-content: space-between;
         align-items: center;
+        padding: 30px 20px;
+        margin: 10px;
+        width: 80vw;
+        border-color: $pink_accent;
+        // border-style:solid;
+        // border-width:1px;
+        // border-radius: 5px;
     }
 }
 
 .homePageContainer{
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.homePageMainTitle{
+    padding : 70px 10px 40px 10px;
+    text-align:center;
 }
 
 .homePageTitle{
-    padding-top : 80px;
-}
-
-.homePageFeature{
-    padding : 60px 0 10px 0;
+    // padding-top : 80px;
+    width: 50%;
 }
 
 .homePageImg{
-    width: 50vw;
+    // width: 300px;
+    width: 60%;
+}
+
+.pink-line-break{
+    width:80vw;
+    height: 3px;
+    background-color: $pink_accent;
+}
+
+@media (max-width: 600px) {
+  .homePage section{
+    flex-direction: column;
+  }
 }

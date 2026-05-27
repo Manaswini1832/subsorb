@@ -50,30 +50,36 @@ const Home = () => {
             theme='dark'
             onlyThirdPartyProviders
         />
-          <h1 className = "homePageTitle">Subsorb helps you organize your youtube subscriptions</h1>
-          <p className = "homePageRequest">Note : Please use a VPN since some ISPs have supabase blocked</p>
-          <video src='/subsorb_screen_record.mp4' width="100%" height="400" controls="controls"  autoPlay muted loop/>
-
-
+          <h1 className = "homePageMainTitle">Subsorb helps you organize your youtube subscriptions</h1>
+          {/* <p className = "homePageRequest">Note : Please use a VPN since some ISPs have supabase blocked</p> */}
+          {/* <video src='/subsorb_screen_record.mp4' width="100%" height="400" controls="controls"  autoPlay muted loop/> */}
+          
+          <div className="pink-line-break"></div>
 
           <section>
-            <h4 className="homePageFeature">Add youtube channels to a collection for later reference : </h4>
-            <img className = "homePageImg" src="/CollectionPage.png" alt="" />
+            <h2 className="homePageFeature">Add youtube channels to a collection for later reference </h2>
+            <img className = "homePageImg" src="/app_screenshots/subsorb_collection.png" alt="" />
           </section>
 
-          <section>
-            <h4 className="homePageFeature">Organize your channels into multiple collections : </h4>
-            <img className = "homePageImg" src="/dashboard.png" alt="" />
-          </section>
+          <div className="pink-line-break"></div>
 
           <section>
-            <h4 className="homePageFeature">AI generated summaries + searchable tags : </h4>
-            <img className = "homePageImg" src="/searchable_tags.png" alt="" />
+            <img className = "homePageImg" src="/app_screenshots/subsorb_dashboard.png" alt="" />
+            <h2 className="homePageFeature">Organize your channels into multiple collections </h2>
           </section>
 
+          <div className="pink-line-break"></div>
+
           <section>
-            <h4 className="homePageFeature">AI powered mood based channel recommendations with match score : </h4>
-            <img className = "homePageImg" src="/mood_based_recs.png" alt="" />
+            <h2 className="homePageFeature">AI generated summaries + searchable tags </h2>
+            <img className = "homePageImg" src="/app_screenshots/subsorb_collection_tag_search.png" alt="" />
+          </section>
+
+          <div className="pink-line-break"></div>
+
+          <section>
+            <img className = "homePageImg" src="/app_screenshots/subsorb_mood_recs.png" alt="" />
+            <h2 className="homePageFeature">AI powered mood based channel recommendations with match score </h2>
           </section>
         </div>
         
