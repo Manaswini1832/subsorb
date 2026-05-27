@@ -130,7 +130,10 @@ const Dashboard = () => {
   //create collection submit
   const handleSubmit = (e) => {
     e.preventDefault()
-    if(formInput === '') return
+    if(formInput === ''){
+      alert('Empty collection name')
+      return;
+    }
     makeCollection(formInput)
     setFormInput('')
   }
@@ -138,7 +141,10 @@ const Dashboard = () => {
   //mood based input submit
   const handleMoodSubmit = (e) => {
     e.preventDefault();
-    if(moodInput === '') return
+    if(moodInput === ''){
+      alert('No mood? :)')
+      return;
+    }
     searchMood(moodInput);
     setMoodInput('')
   }
@@ -170,9 +176,21 @@ const Dashboard = () => {
           </div>
 
           <form className="dashboard-form collection-form" onSubmit={handleSubmit}>
-            <div><label htmlFor='collectionNameInput'>Collection Name :</label></div>
+            {/* <div><label htmlFor='collectionNameInput'>Collection Name :</label></div> */}
             <div>
-              <input id='collectionNameInput' type='text' onChange={handleFormChange} value={formInput} maxLength={50}/>
+              <input 
+                id='collectionNameInput' 
+                type='text' 
+                onChange={handleFormChange} 
+                value={formInput} 
+                maxLength={50}
+                placeholder="Collection name here..."
+                style={{
+                  width: "250px",
+                  padding: "0 0 0 10px",
+                  fontSize: "15px",
+                }}
+                />
               <button  className='dark-create-btn' type="submit">
                  <FontAwesomeIcon icon={faPlus} />
               </button>
@@ -203,9 +221,21 @@ const Dashboard = () => {
       </div>
 
         <form className="dashboard-form collection-form" onSubmit={handleSubmit}>
-          <div><label htmlFor='collectionNameInput'>Collection Name :</label></div>
+          {/* <div><label htmlFor='collectionNameInput'>Collection Name :</label></div> */}
           <div>
-            <input id='collectionNameInput' type='text' onChange={handleFormChange} value={formInput}/>
+            <input 
+              id='collectionNameInput' 
+              type='text' 
+              onChange={handleFormChange} 
+              value={formInput} 
+              maxLength={50}
+              placeholder="Collection name here..."
+              style={{
+                width: "250px",
+                padding: "0 0 0 10px",
+                fontSize: "15px",
+              }}
+            />
             <button  className='dark-create-btn' type="submit">
                  <FontAwesomeIcon icon={faPlus} />
             </button>
@@ -214,12 +244,19 @@ const Dashboard = () => {
 
         <form className="dashboard-form mood-form">
             <div>
-              <label htmlFor='moodInput'>
-                Enter your mood : I want to watch book videos
-              </label>
-            </div>
-            <div>
-              <input id='moodInput' type='text' onChange={handleMoodFormChange} value={moodInput} maxLength={200}/>
+              <input 
+                id='moodInput' 
+                type='text' 
+                onChange={handleMoodFormChange} 
+                value={moodInput} 
+                maxLength={200}
+                placeholder="Enter mood : I want to watch..."
+                style={{
+                  width: "250px",
+                  padding: "0 0 0 10px",
+                  fontSize: "15px",
+                }}  
+              />
               <button className='dark-create-btn' type="submit" onClick={handleMoodSubmit}>
                 <FontAwesomeIcon icon={faSearch}/>
               </button>
@@ -267,7 +304,7 @@ const Dashboard = () => {
           <div className='dark-dashboard-collections-container'>
             {collecs.map((collection, index) => (
               <div key={index}>
-                <CollectionCard name={collection.name} id={collection.id}/>
+                <CollectionCard name={collection.name} id={collection.id} isPublic={collection.isPublic}/>
               </div>
             ))}
           </div>

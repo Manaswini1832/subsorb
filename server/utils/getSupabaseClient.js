@@ -14,11 +14,14 @@ export default function getSupabaseClient(token) {
     supabaseAnonKey = process.env.SERVER_SUPABASE_ANON_PUBLIC_KEY_DEV;
   }
 
-  return createClient(supabaseURL, supabaseAnonKey, {
-    global: {
+  const options = {};
+  if (token) {
+    options.global = {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    },
-  });
+    };
+  }
+
+  return createClient(supabaseURL, supabaseAnonKey, options);
 }

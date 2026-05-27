@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useSession } from '../contexts/userContext';
 import { useParams, useNavigate } from 'react-router-dom';
 import ChannelCard from '../components/ChannelCard';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPlus, faArrowLeft, faDownload, faLink } from '@fortawesome/free-solid-svg-icons'
 import './Collection.scss';
 
 const Collection = () => {
@@ -19,6 +21,7 @@ const Collection = () => {
   const collectionName = parts.join('-');
 
   const navigate = useNavigate();
+
 
   const getChannels = async (collecID) => {
     if (!session) {
@@ -68,6 +71,7 @@ const Collection = () => {
     }
   }
 
+  //add a new channel in channels db
   const makeChannel = async(handle) => {
     const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_PROD}/api/v1/channels`
     try {
@@ -97,6 +101,7 @@ const Collection = () => {
     }
   }
 
+  //add a new channel to collection
   const addChannel = async(collectName, handle, collectID) => {
     
     const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_PROD}/api/v1/collection-channels`
@@ -163,7 +168,10 @@ const Collection = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    if(formInput === '') return
+    if(formInput === ''){
+      alert('Empty URL')
+      return;
+    }
 
     // const regex = /@([^/?]+)/
     // const regex =
@@ -191,6 +199,7 @@ const Collection = () => {
   };
 
   const downloadPdf = async () => {
+    if(channels.length === 0) return;
     const backendUrl = `${process.env.REACT_APP_BACKEND_API_URL_PROD}/api/v1/collection-channels/export-pdf`
       try {
         const response = await fetch(backendUrl, {
@@ -221,6 +230,11 @@ const Collection = () => {
       setError(error.message)
     }
   };
+
+  const shareCollection = async () => {
+    alert("Your collection will be visible to anyone with a link. Make public?")
+    alert("Made public!")
+  }
 
   useEffect(() => {
     if (selectedTags.length === 0) {
@@ -256,11 +270,29 @@ const Collection = () => {
       <div className='dark-container'>
           <div className='collection-top'>
             <h1>{collectionName}</h1>
-            <button className='pink-go-to-dashboard-btn' onClick={goToDashboard}>Go to dashboard</button>
+            <div className='collection-button-box'>
+            {
+              // channels.length > 0 && 
+              // <button className="icon-button" onClick={shareCollection}>
+              //   <FontAwesomeIcon icon={faLink}/>
+              //   {/* <span class="hover-text">Share to web</span> */}
+              // </button>
+            }
+            <button className="icon-button" onClick={goToDashboard}>
+              <FontAwesomeIcon icon={faArrowLeft} />
+              {/* <span class="hover-text">Go back</span> */}
+            </button>
+            {
+              channels.length > 0 && <button className="icon-button" onClick={downloadPdf}>
+                <FontAwesomeIcon icon={faDownload} />
+                {/* <span class="hover-text">Download</span> */}
+              </button>
+            }
+          </div>
           </div>
 
           <form onSubmit={handleSubmit} className='collection-form'>
-              <div><label htmlFor='channelUrlInput'>Channel URL :</label></div>
+              {/* <div><label htmlFor='channelUrlInput'>Channel URL :</label></div> */}
               <div>
                 <input id='channelUrlInput' type='text' onChange={handleFormChange} value={formInput}/>
                 <button className='dark-create-btn' type="submit">Add</button>
@@ -284,15 +316,45 @@ const Collection = () => {
     <div className='dark-container'>
         <div className='collection-top'>
           <h1>{collectionName}</h1>
-          <button onClick={downloadPdf}>Download as PDF</button>
-          <button className='pink-go-to-dashboard-btn' onClick={goToDashboard}>Go to dashboard</button>
+          <div className='collection-button-box'>
+            {
+              // channels.length > 0 && 
+              // <button className="icon-button" onClick={shareCollection}>
+              //   <FontAwesomeIcon icon={faLink}/>
+              //   {/* <span class="hover-text">Share to web</span> */}
+              // </button>
+            }
+            <button className="icon-button" onClick={goToDashboard}>
+              <FontAwesomeIcon icon={faArrowLeft} />
+              {/* <span class="hover-text">Go back</span> */}
+            </button>
+            {
+              channels.length > 0 && <button className="icon-button" onClick={downloadPdf}>
+                <FontAwesomeIcon icon={faDownload} />
+                {/* <span class="hover-text">Download</span> */}
+              </button>
+            }
+          </div>
         </div>
 
         <form onSubmit={handleSubmit} className='collection-form'>
-            <div><label htmlFor='channelUrlInput'>Channel URL :</label></div>
+            {/* <div><label htmlFor='channelUrlInput'>Channel URL :</label></div> */}
             <div>
-              <input id='channelUrlInput' type='text' onChange={handleFormChange} value={formInput}/>
-              <button className='dark-create-btn' type="submit">Add</button>
+              <input 
+                id='channelUrlInput' 
+                type='text' 
+                onChange={handleFormChange} 
+                value={formInput}
+                placeholder="Youtube Channel URL here..."
+                style={{
+                  width: "250px",
+                  padding: "0 0 0 10px",
+                  fontSize: "15px",
+                }}
+                />
+              <button className='dark-create-btn' type="submit">
+                <FontAwesomeIcon icon={faPlus} />
+              </button>
             </div>
         </form>
 

@@ -7,6 +7,7 @@ import collectionRoutes from './routes/collectionRoutes.js';
 import channelRoutes from './routes/channelRoutes.js';
 import collectionChannelRoutes from './routes/collectionChannelRoutes.js';
 import moodRoutes from './routes/moodRoutes.js';
+import publicCollectionRoutes from './routes/publicCollectionRoutes.js'
 
 import logger from './utils/logger.js';
 
@@ -49,6 +50,7 @@ app.use('/api/v1/collections', collectionRoutes);
 app.use('/api/v1/channels', channelRoutes);
 app.use('/api/v1/collection-channels', collectionChannelRoutes);
 app.use('/api/v1/mood', moodRoutes);
+app.use('/api/v1/public', publicCollectionRoutes)
 
 /*
 |--------------------------------------------------------------------------
