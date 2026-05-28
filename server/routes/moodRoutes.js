@@ -6,15 +6,33 @@ import OpenAI from "openai";
 import dotenv from 'dotenv';
 import {rateLimiter} from "../middleware/rateLimit.js"
 import logger from '../utils/logger.js'
+import {databaseResponseTimeHistogram} from '../utils/metrics.js';
 dotenv.config();
 
 const router = express.Router();
 
 router.post("/", authChecker, rateLimiter, async(req, res) => {
+      /*
+      |--------------------------------------------------------------------------
+      | Metrics
+      |--------------------------------------------------------------------------
+      */
+      const metricsLabels = {
+        operation : 'getChannels'
+      }
+    
+      const timer = databaseResponseTimeHistogram.startTimer();
+    
+      /*
+      |--------------------------------------------------------------------------
+      | Actual logic
+      |--------------------------------------------------------------------------
+      */
     try {
         if(!res?.locals?.authenticated){
         logger.error('Unauthorized user tried to ask mood recs : Authentication required')
-          return res
+        timer({...metricsLabels, success: false});
+        return res
             .status(401)
             .json(createErrorObject('Unauthorized: authentication required.'));
         }
@@ -23,6 +41,7 @@ router.post("/", authChecker, rateLimiter, async(req, res) => {
         const token = req?.header('Authorization')?.split(' ')[1];
         if(!token){
             logger.error('Missing or invalid authorization token sent while asking mood recs')
+            timer({...metricsLabels, success: false});
             return res
             .status(400)
             .json(createErrorObject('Missing or invalid authorization token.'));
@@ -33,7 +52,8 @@ router.post("/", authChecker, rateLimiter, async(req, res) => {
         
         if(!moodInput || moodInput == "" || moodInput.length > 200){
         logger.error('User : ' + res?.locals?.decoded?.payload?.sub + ' asked for empty rec');
-          return res
+        timer({...metricsLabels, success: false});
+        return res
             .status(400)
             .json(createErrorObject('Invalid mood input'));
         }
@@ -64,7 +84,7 @@ router.post("/", authChecker, rateLimiter, async(req, res) => {
             });
 
         logger.info('Successfully fetched recs for user : ' + res?.locals?.decoded?.payload?.sub)
-
+        timer({...metricsLabels, success: true});
         return res
                   .status(201)
                   .json({
@@ -79,6 +99,7 @@ router.post("/", authChecker, rateLimiter, async(req, res) => {
 
     } catch (error) {
         logger.error("Mood routes server issue, " + error.message);
+        timer({...metricsLabels, success: false});
         return res
               .status(500)
               .json(createErrorObject('SERVER ERROR : ' + error.message));

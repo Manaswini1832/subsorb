@@ -14,6 +14,9 @@ import logger from './utils/logger.js';
 import { producer, consumer } from './utils/kafkaClient.js';
 import startEmbeddingConsumer from './utils/startEmbeddingConsumer.js';
 
+import {metricsServer, restResponseTimeHistogram, databaseResponseTimeHistogram} from './utils/metrics.js';
+import responseTime from 'response-time';
+
 const app = express();
 
 const PORT = process.env.SERVER_PORT || 5000;
@@ -45,6 +48,16 @@ app.use(express.static(clientBuildPath));
 | Routes
 |--------------------------------------------------------------------------
 */
+
+app.use(responseTime((req, res, time) => {
+  if(req?._parsedOriginalUrl?.path){
+    restResponseTimeHistogram.observe({
+      method: req.method,
+      route: req._parsedOriginalUrl?.path,
+      statusCode: res.statusCode
+    }, time*1000)
+  }
+}))
 
 app.use('/api/v1/collections', collectionRoutes);
 app.use('/api/v1/channels', channelRoutes);
@@ -125,9 +138,11 @@ async function connectKafka() {
 |--------------------------------------------------------------------------
 */
 
-app.listen(PORT, () => {
+app.listen(PORT, async() => {
   logger.info(`Server running on port ${PORT}`);
 
+  metricsServer();
+
   // Start Kafka in background
-  connectKafka();
+  await connectKafka();
 });

@@ -6,6 +6,7 @@ import getYoutubeChannelDetails from '../utils/getYoutubeChannelDetails.js'
 import isStale from '../utils/isStale.js'
 import PDFDocument from 'pdfkit'
 import logger from '../utils/logger.js'
+import {databaseResponseTimeHistogram} from '../utils/metrics.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -13,10 +14,27 @@ const router = express.Router()
 
 //get json by collection name
 router.get('/:collectionID', authChecker, async (req, res) => {
+  /*
+  |--------------------------------------------------------------------------
+  | Metrics
+  |--------------------------------------------------------------------------
+  */
+  const metricsLabels = {
+    operation : 'getChannelsOfCollection'
+  }
+
+  const timer = databaseResponseTimeHistogram.startTimer();
+
+  /*
+  |--------------------------------------------------------------------------
+  | Actual logic
+  |--------------------------------------------------------------------------
+  */
     try {
 
         if(!res?.locals?.authenticated){
             logger.error('Unauthorized user tried to access channels by collection : Authentication required')
+            timer({...metricsLabels, success: false});
             return res
                 .status(401)
                 .json(createErrorObject('Unauthorized: authentication required.'));
@@ -25,6 +43,7 @@ router.get('/:collectionID', authChecker, async (req, res) => {
         const token = req?.header('Authorization')?.split(' ')[1];
         if(!token){
             logger.error('Missing or invalid authorization token sent while accessing a collection channel')
+            timer({...metricsLabels, success: false});
             return res
             .status(400)
             .json(createErrorObject('Missing or invalid authorization token.'));
@@ -37,6 +56,7 @@ router.get('/:collectionID', authChecker, async (req, res) => {
 
         if(!queryCollection){
             logger.error('User : ' + res?.locals?.decoded?.payload?.sub + ' tried to fetch channels from invalid collection');
+            timer({...metricsLabels, success: false});
             res
                 .status(400)
                 .json(createErrorObject('Can\'t fetch channels from an invalid collection'));
@@ -61,6 +81,7 @@ router.get('/:collectionID', authChecker, async (req, res) => {
 
         if(supabaseError){
             logger.error('Database error while user : ' + res?.locals?.decoded?.payload?.sub + ' tried to read channels from ' + queryCollection + ' : ' + supabaseError.message);
+            timer({...metricsLabels, success: false});
             res
                 .status(500)
                 .json(createErrorObject('DATABASE ERROR : ' + supabaseError.message));
@@ -68,12 +89,14 @@ router.get('/:collectionID', authChecker, async (req, res) => {
         }
     
         logger.info('User : ' + res?.locals?.decoded?.payload?.sub + ' successfully fetched channels in collection : ' + queryCollection);
+        timer({...metricsLabels, success: true});
         return res
                   .status(200)
                   .json(supabaseData);
 
     } catch (error) {
         logger.error('Server error while fetching channels by collection name : ' + error.message);
+        timer({...metricsLabels, success: false});
         return res
               .status(500)
               .json(createErrorObject('SERVER ERROR : ' + error.message));
@@ -82,8 +105,26 @@ router.get('/:collectionID', authChecker, async (req, res) => {
   
 let supabaseChans, supabaseChansError;
 router.post('/', authChecker, async (req, res) => {
+  /*
+  |--------------------------------------------------------------------------
+  | Metrics
+  |--------------------------------------------------------------------------
+  */
+  const metricsLabels = {
+    operation : 'addChannelToCollection'
+  }
+
+  const timer = databaseResponseTimeHistogram.startTimer();
+
+  /*
+  |--------------------------------------------------------------------------
+  | Actual logic
+  |--------------------------------------------------------------------------
+  */
+  try {
     if(!res?.locals?.authenticated){
         logger.error('Unauthorized user tried to add channels to collection : Authentication required')
+        timer({...metricsLabels, success: false});
         return res
         .status(401)
         .json(createErrorObject('Unauthorized: authentication required.'));
@@ -92,6 +133,7 @@ router.post('/', authChecker, async (req, res) => {
     const token = req?.header('Authorization')?.split(' ')[1];
     if(!token){
         logger.error('Missing or invalid authorization token sent while adding a collection channel')
+        timer({...metricsLabels, success: false});
         return res
         .status(400)
         .json(createErrorObject('Missing or invalid authorization token.'));
@@ -103,6 +145,7 @@ router.post('/', authChecker, async (req, res) => {
 
     if(!collectionName || !channelHandle || !collectionID){
         logger.error('User : ' + res?.locals?.decoded?.payload?.sub + ' tried to add an invalid channel to collection : no collectionName or channelHandle or collectionID')
+        timer({...metricsLabels, success: false});
         res
             .status(400)
             .json(createErrorObject('Can\'t create a collection-channel with null records'));
@@ -114,7 +157,6 @@ router.post('/', authChecker, async (req, res) => {
     const supabase2 = getSupabaseClient(token);
 
     //Get channel
-    try {
         const { data, error }  = await supabase2
             .from('Channels')
             .select()
@@ -154,20 +196,17 @@ router.post('/', authChecker, async (req, res) => {
 
         if (supabaseChansError) {
             logger.error('Error in refetching channel data : ' + supabaseChansError);
+            timer({...metricsLabels, success: false});
             return res
                     .status(500)
                     .json(createErrorObject('Error occurred in fetching channels'));
         }
-        logger.info('Fetched channel details successfully')
-    } catch (error) {
-        logger.info('Server error in fetching channel information : ' + errorMonitor.message)
-        return res
-                .status(500)
-                .json(createErrorObject('SERVER ERROR(fetching channels) : ' + error.message));
-    }
+        logger.info('Fetched channel details successfully');
 
-    try {
+
+        try {
         const channelID = supabaseChans[0].id;
+        // const supabase2 = getSupabaseClient(token);
 
         logger.info('Adding channel with id : ' + channelID + ' to database');
 
@@ -191,42 +230,72 @@ router.post('/', authChecker, async (req, res) => {
         if(supabaseError){
             if(supabaseError.message == 'duplicate key value violates unique constraint "unique_channels_in_collection_for_a_user"'){
                 logger.error('Couldn\'t add channel as it already exists')
+                timer({...metricsLabels, success: false});
                 return res
                            .status(409)
                            .json({message: "This channel already exists in the collection"});
 
             }
 
+            logger.error('Database error while adding channel to collection : ' + supabaseError.message)
+            timer({...metricsLabels, success: false});
             return res
-                logger.error('Database error while adding channel to collection : ' + supabaseError.message)
               .status(500)
               .json(createErrorObject('DATABASE ERROR : ' + supabaseError.message));
         }
 
         logger.info('User : ' + res?.locals?.decoded?.payload?.sub + ' added channel : ' + channelID + ' to colleciton  : ' + collectionID)
+        timer({...metricsLabels, success: true});
         return res
                 .status(201)
                 .json(supabaseData);
 
-    } catch (error) {
-        if(supabaseChans.length === 0){ //channel isn't in db
-            logger.error('Channel not in database. Needs retry')
+        } catch (error) {
+            if(supabaseChans.length === 0){ //channel isn't in db
+                logger.error('Channel not in database. Needs retry')
+                timer({...metricsLabels, success: false});
+                return res
+                        .status(200)
+                        .json({success: false, needsRetry: true});
+            }
+                
+            logger.error('Server error while adding channel to collection : ' + error.message)
+            timer({...metricsLabels, success: false});
             return res
-                    .status(200)
-                    .json({success: false, needsRetry: true});
+                    .status(500)
+                    .json(createErrorObject('SERVER ERROR : ' + error.message));
         }
-            
-        logger.error('Server error while adding channel to collection : ' + error.message)
+    } catch (error) {
+        logger.info('Server error in fetching channel information : ' + errorMonitor.message)
+        timer({...metricsLabels, success: false});
         return res
                 .status(500)
-                .json(createErrorObject('SERVER ERROR : ' + error.message));
+                .json(createErrorObject('SERVER ERROR(fetching channels) : ' + error.message));
     }
 });
 
 router.post('/export-pdf', authChecker, async(req, res) => {
+
+  /*
+  |--------------------------------------------------------------------------
+  | Metrics
+  |--------------------------------------------------------------------------
+  */
+  const metricsLabels = {
+    operation : 'exportCollectionPDF'
+  }
+
+  const timer = databaseResponseTimeHistogram.startTimer();
+
+  /*
+  |--------------------------------------------------------------------------
+  | Actual logic
+  |--------------------------------------------------------------------------
+  */
     try {
         if(!res?.locals?.authenticated){
             logger.error('Unauthorized user tried to export collection : Authentication required')
+            timer({...metricsLabels, success: false});
             return res
                 .status(401)
                 .json(createErrorObject('Unauthorized: authentication required.'));
@@ -235,6 +304,7 @@ router.post('/export-pdf', authChecker, async(req, res) => {
         const token = req?.header('Authorization')?.split(' ')[1];
         if(!token){
             logger.error('Missing or invalid authorization token sent while exporting collection')
+            timer({...metricsLabels, success: false});
             return res
             .status(400)
             .json(createErrorObject('Missing or invalid authorization token.'));
@@ -254,6 +324,7 @@ router.post('/export-pdf', authChecker, async(req, res) => {
         
         if(!collectionId || collectionId == '' || !collectionName || collectionName == ''){
             logger.error('Can\'t create PDF for empty collection')
+            timer({...metricsLabels, success: false});
             return res  
                     .status(400)
                     .json(createErrorObject('Can\'t create PDF for empty collection'))
@@ -279,6 +350,7 @@ router.post('/export-pdf', authChecker, async(req, res) => {
 
         if (channelsError) {
             logger.error('Failed to fetch channels while exporting pdf')
+            timer({...metricsLabels, success: false});
             return res.status(500).json({
                 message: "Failed to fetch channels",
             });
@@ -388,8 +460,15 @@ router.post('/export-pdf', authChecker, async(req, res) => {
         doc.end();
 
         logger.info('Successfully created PDF for collection : ' + collectionId)
+        timer({...metricsLabels, success: true});
+        // res
+        // .status(200)
+        // .json({
+        //     success: true
+        // });
     } catch (error) {
         logger.error('Server error while exporting PDF : ' + error.message)
+        timer({...metricsLabels, success: false});
         return res
               .status(500)
               .json(createErrorObject('SERVER ERROR : ' + error.message));
