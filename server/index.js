@@ -138,11 +138,11 @@ async function connectKafka() {
 |--------------------------------------------------------------------------
 */
 
-app.listen(PORT, async() => {
+app.listen(PORT, "127.0.0.1", () => {
   logger.info(`Server running on port ${PORT}`);
 
   metricsServer();
 
   // Start Kafka in background
-  await connectKafka();
+  connectKafka();
 });
