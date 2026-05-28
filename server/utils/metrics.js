@@ -30,7 +30,7 @@ export function metricsServer(){
         )
     })
 
-    app.listen(process.env.SERVER_METRICS_PORT, () => {
+    app.listen(process.env.SERVER_METRICS_PORT, "127.0.0.1", () => {
         logger.info('Metrics server up and running')
     })
 }
