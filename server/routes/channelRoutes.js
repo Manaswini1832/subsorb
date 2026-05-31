@@ -2,11 +2,12 @@ import express from 'express'
 import authChecker from '../middleware/authChecker.js'
 import createErrorObject from '../utils/error.js'
 import getSupabaseClient from "../utils/getSupabaseClient.js"
-import dotenv from 'dotenv';
 import getYoutubeChannelDetails from '../utils/getYoutubeChannelDetails.js'
 import {rateLimiter} from "../middleware/rateLimit.js"
 import logger from '../utils/logger.js'
 import { databaseResponseTimeHistogram } from '../utils/metrics.js';
+import { redisClient } from '../utils/redisClient.js';
+import dotenv from 'dotenv';
 dotenv.config();
 
 const router = express.Router();
@@ -107,6 +108,16 @@ router.post('/', authChecker, rateLimiter, async (req, res) => {
             .json(createErrorObject('DATABASE ERROR : ' + supabaseError.message));
           return;
       }
+
+      //set redis cache here
+      const cacheKey = `channel:${channelHandle}`;
+
+      await redisClient.set(
+        cacheKey, 
+        JSON.stringify(supabaseData),
+        "EX", 
+        300
+      );
   
       logger.info('Channel details of : ' + channelHandle + ' successfully added to database');
       timer({...metricsLabels, success: true});

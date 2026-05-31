@@ -7,6 +7,7 @@ import isStale from '../utils/isStale.js'
 import PDFDocument from 'pdfkit'
 import logger from '../utils/logger.js'
 import {databaseResponseTimeHistogram} from '../utils/metrics.js';
+import { redisClient } from '../utils/redisClient.js'
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -105,173 +106,193 @@ router.get('/:collectionID', authChecker, async (req, res) => {
   
 let supabaseChans, supabaseChansError;
 router.post('/', authChecker, async (req, res) => {
-  /*
-  |--------------------------------------------------------------------------
-  | Metrics
-  |--------------------------------------------------------------------------
-  */
-  const metricsLabels = {
-    operation : 'addChannelToCollection'
-  }
+	/*
+	|--------------------------------------------------------------------------
+	| Metrics
+	|--------------------------------------------------------------------------
+	*/
+	const metricsLabels = {
+	    operation : 'addChannelToCollection'
+	}
 
-  const timer = databaseResponseTimeHistogram.startTimer();
+	const timer = databaseResponseTimeHistogram.startTimer();
 
-  /*
-  |--------------------------------------------------------------------------
-  | Actual logic
-  |--------------------------------------------------------------------------
-  */
-  try {
-    if(!res?.locals?.authenticated){
-        logger.error('Unauthorized user tried to add channels to collection : Authentication required')
-        timer({...metricsLabels, success: false});
-        return res
-        .status(401)
-        .json(createErrorObject('Unauthorized: authentication required.'));
-    }
+	/*
+	|--------------------------------------------------------------------------
+	| Actual logic
+	|--------------------------------------------------------------------------
+	*/
+	try {
+		if(!res?.locals?.authenticated){
+			logger.error('Unauthorized user tried to add channels to collection : Authentication required')
+			timer({...metricsLabels, success: false});
+			return res
+			.status(401)
+			.json(createErrorObject('Unauthorized: authentication required.'));
+		}
 
-    const token = req?.header('Authorization')?.split(' ')[1];
-    if(!token){
-        logger.error('Missing or invalid authorization token sent while adding a collection channel')
-        timer({...metricsLabels, success: false});
-        return res
-        .status(400)
-        .json(createErrorObject('Missing or invalid authorization token.'));
-    }
+		const token = req?.header('Authorization')?.split(' ')[1];
+		if(!token){
+			logger.error('Missing or invalid authorization token sent while adding a collection channel')
+			timer({...metricsLabels, success: false});
+			return res
+			.status(400)
+			.json(createErrorObject('Missing or invalid authorization token.'));
+		}
 
-    const collectionName = req?.body?.collecName;
-    const channelHandle = req?.body?.channelHandle;
-    const collectionID = req?.body?.collecID;
+		const collectionName = req?.body?.collecName;
+		const channelHandle = req?.body?.channelHandle;
+		const collectionID = req?.body?.collecID;
 
-    if(!collectionName || !channelHandle || !collectionID){
-        logger.error('User : ' + res?.locals?.decoded?.payload?.sub + ' tried to add an invalid channel to collection : no collectionName or channelHandle or collectionID')
-        timer({...metricsLabels, success: false});
-        res
-            .status(400)
-            .json(createErrorObject('Can\'t create a collection-channel with null records'));
-        return
-    }
+		if(!collectionName || !channelHandle || !collectionID){
+			logger.error('User : ' + res?.locals?.decoded?.payload?.sub + ' tried to add an invalid channel to collection : no collectionName or channelHandle or collectionID')
+			timer({...metricsLabels, success: false});
+			res
+				.status(400)
+				.json(createErrorObject('Can\'t create a collection-channel with null records'));
+			return
+		}
 
-    logger.info('User : ' + res?.locals?.decoded?.payload?.sub + ' trying to add channel : ' + channelHandle + ' to collection : ' + collectionID);
+		logger.info('User : ' + res?.locals?.decoded?.payload?.sub + ' trying to add channel : ' + channelHandle + ' to collection : ' + collectionID);
 
-    const supabase2 = getSupabaseClient(token);
+		const supabase2 = getSupabaseClient(token);
 
-    //Get channel
-        const { data, error }  = await supabase2
-            .from('Channels')
-            .select()
-            .eq('handle', channelHandle);
-        
-        supabaseChans = data;
-        supabaseChansError = error;
+		//check cache first for channel details and put in supabaseChans
+        const cacheKey = `channel:${channelHandle}`;
+		const cachedChannel = await redisClient.get(cacheKey);
+        if (cachedChannel) {
+            logger.info(`CACHE HIT on ${channelHandle}`);
+            supabaseChans = JSON.parse(cachedChannel);
+        }else {
+			//CACHE MISS : make db call to get channel
+			//Get channel
+            logger.info(`CACHE MISS on ${channelHandle} so fetch from db`);
+			const { data, error }  = await supabase2
+				.from('Channels')
+				.select()
+				.eq('handle', channelHandle);
+			
+			supabaseChans = data;
+			supabaseChansError = error;
 
-        // console.log(supabaseChans)
+			// console.log(supabaseChans)
+		}
 
-        //here if the data is stale(was first created 6months ago, update it)
-        if (
-            Array.isArray(supabaseChans) &&
-            supabaseChans.length > 0 &&
-            isStale(supabaseChans[0].updated_at)
-        ){
-            //get the data again and update supabase row
-            logger.info('Channel data stale so refetching initiated');
-            const ytData = await getYoutubeChannelDetails(channelHandle, token);
-            if(!ytData.data){
-                throw err;           
-            }
-            const freshChannelDetails = JSON.stringify(ytData.data);
+		//here if the data is stale(was first created 6months ago, update it)
+		if (
+			Array.isArray(supabaseChans) &&
+			supabaseChans.length > 0 &&
+			isStale(supabaseChans[0].updated_at)
+		){
+			//get the data again and update supabase row
+			logger.info('Channel data stale so refetching initiated');
+			const ytData = await getYoutubeChannelDetails(channelHandle, token);
+			if(!ytData.data){
+				throw err;           
+			}
+			const freshChannelDetails = JSON.stringify(ytData.data);
 
-            const { data, error }  = await supabase2
-            .from('Channels')
-            .update({
-                details: freshChannelDetails,
-                updated_at: new Date().toISOString(),
-            })
-            .eq('handle', channelHandle)
-            .select();
+			const { data, error }  = await supabase2
+			.from('Channels')
+			.update({
+				details: freshChannelDetails,
+				updated_at: new Date().toISOString(),
+			})
+			.eq('handle', channelHandle)
+			.select();
 
-            supabaseChans = data;
-            supabaseChansError = error;
-        }
+			supabaseChans = data;
+			supabaseChansError = error;
 
-        if (supabaseChansError) {
-            logger.error('Error in refetching channel data : ' + supabaseChansError);
-            timer({...metricsLabels, success: false});
-            return res
-                    .status(500)
-                    .json(createErrorObject('Error occurred in fetching channels'));
-        }
-        logger.info('Fetched channel details successfully');
-
-
-        try {
-        const channelID = supabaseChans[0].id;
-        // const supabase2 = getSupabaseClient(token);
-
-        logger.info('Adding channel with id : ' + channelID + ' to database');
-
-        const { data: supabaseData, error: supabaseError } = await supabase2
-            .from('Collection_Channels')
-            .insert({ collection_id: collectionID, channel_id: channelID })
-            .select(`
-                id,
-                Collections:collection_id(
-                    name
-                ),
-                Channels:channel_id(
-                    ai_summary,
-                    ai_tags,
-                    details
-                )
-            `)
-            .eq('Collections.id', collectionID);
-
-
-        if(supabaseError){
-            if(supabaseError.message == 'duplicate key value violates unique constraint "unique_channels_in_collection_for_a_user"'){
-                logger.error('Couldn\'t add channel as it already exists')
+            if (supabaseChansError) {
+                logger.error('Error in refetching channel data : ' + supabaseChansError);
                 timer({...metricsLabels, success: false});
                 return res
-                           .status(409)
-                           .json({message: "This channel already exists in the collection"});
-
+                        .status(500)
+                        .json(createErrorObject('Error occurred in fetching channels'));
             }
+			
+			//update redis cache if supabaseChans not null
+            await redisClient.set(
+                cacheKey, 
+                JSON.stringify(supabaseChans),
+                "EX", 
+                300
+            );
+		}
+		
+		logger.info('Fetched channel details successfully');
 
-            logger.error('Database error while adding channel to collection : ' + supabaseError.message)
-            timer({...metricsLabels, success: false});
-            return res
-              .status(500)
-              .json(createErrorObject('DATABASE ERROR : ' + supabaseError.message));
-        }
+		
+		//put the channel in collection
+		try {
+			const channelID = supabaseChans[0].id;
+			// const supabase2 = getSupabaseClient(token);
 
-        logger.info('User : ' + res?.locals?.decoded?.payload?.sub + ' added channel : ' + channelID + ' to colleciton  : ' + collectionID)
-        timer({...metricsLabels, success: true});
-        return res
-                .status(201)
-                .json(supabaseData);
+			logger.info('Adding channel with id : ' + channelID + ' to database');
 
-        } catch (error) {
-            if(supabaseChans.length === 0){ //channel isn't in db
-                logger.error('Channel not in database. Needs retry')
-                timer({...metricsLabels, success: false});
-                return res
-                        .status(200)
-                        .json({success: false, needsRetry: true});
-            }
-                
-            logger.error('Server error while adding channel to collection : ' + error.message)
-            timer({...metricsLabels, success: false});
-            return res
-                    .status(500)
-                    .json(createErrorObject('SERVER ERROR : ' + error.message));
-        }
-    } catch (error) {
-        logger.info('Server error in fetching channel information : ' + errorMonitor.message)
-        timer({...metricsLabels, success: false});
-        return res
-                .status(500)
-                .json(createErrorObject('SERVER ERROR(fetching channels) : ' + error.message));
-    }
+			const { data: supabaseData, error: supabaseError } = await supabase2
+				.from('Collection_Channels')
+				.insert({ collection_id: collectionID, channel_id: channelID })
+				.select(`
+					id,
+					Collections:collection_id(
+						name
+					),
+					Channels:channel_id(
+						ai_summary,
+						ai_tags,
+						details
+					)
+				`)
+				.eq('Collections.id', collectionID);
+
+
+			if(supabaseError){
+				if(supabaseError.message == 'duplicate key value violates unique constraint "unique_channels_in_collection_for_a_user"'){
+					logger.error('Couldn\'t add channel as it already exists')
+					timer({...metricsLabels, success: false});
+					return res
+							   .status(409)
+							   .json({message: "This channel already exists in the collection"});
+
+				}
+
+				logger.error('Database error while adding channel to collection : ' + supabaseError.message)
+				timer({...metricsLabels, success: false});
+				return res
+				  .status(500)
+				  .json(createErrorObject('DATABASE ERROR : ' + supabaseError.message));
+			}
+
+			logger.info('User : ' + res?.locals?.decoded?.payload?.sub + ' added channel : ' + channelID + ' to colleciton  : ' + collectionID)
+			timer({...metricsLabels, success: true});
+			return res
+					.status(201)
+					.json(supabaseData);
+
+		} catch (error) {
+			if(supabaseChans.length === 0){ //channel isn't in db
+				logger.error('Channel not in database. Needs retry')
+				timer({...metricsLabels, success: false});
+				return res
+						.status(200)
+						.json({success: false, needsRetry: true});
+			}
+				
+			logger.error('Server error while adding channel to collection : ' + error.message)
+			timer({...metricsLabels, success: false});
+			return res
+					.status(500)
+					.json(createErrorObject('SERVER ERROR : ' + error.message));
+		}
+	} catch (error) {
+		logger.info('Server error in fetching channel information : ' + errorMonitor.message)
+		timer({...metricsLabels, success: false});
+		return res
+				.status(500)
+				.json(createErrorObject('SERVER ERROR(fetching channels) : ' + error.message));
+	}
 });
 
 router.post('/export-pdf', authChecker, async(req, res) => {
