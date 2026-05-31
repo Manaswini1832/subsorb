@@ -1,4 +1,6 @@
-export default function isStale(updated_at) {
+export default function isStale(
+  updated_at: string | Date | null | undefined,
+): boolean {
   if (!updated_at) return true;
 
   const sixMonthsAgo = new Date();
