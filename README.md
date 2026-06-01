@@ -11,6 +11,8 @@ Subsorb can be used to organize your youtube subscriptions by grouping them into
 - Youtube API, OpenAI LLM-integrations & embeddings
 - Kafka for async load processing
 - Pino for logging
+- Prometheus, Grafana for monitoring and observability
+- Redis for caching
 
 ## Features
 
@@ -30,11 +32,11 @@ Subsorb can be used to organize your youtube subscriptions by grouping them into
 ## Next in the pipeline / Nice to haves
 
 - [x] why isstale when no chan?
-- [ ] Update screenshots, video on readme
-- [ ] Add otel times -> prometheus -> grafana?
+- [x] Update screenshots, video on readme
+- [x] Add otel times -> prometheus -> grafana?
 - [ ] ctxt state management of collections, channels to avoid db reads frequently
 - [ ] pagination
-- [ ] cache makeChan info on redis(?) to avoid db read on addChan retry
+- [x] cache makeChan info on redis(?) to avoid db read on addChan retry
 - [ ] fallback on optimized tag search if embedding match unsatisfactory(elasticsearch?)
 - [x] Export collections as PDF
 - [ ] If export collections as shareable web link? implement RBAC
