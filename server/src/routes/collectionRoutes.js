@@ -64,6 +64,7 @@ router.get('/', authChecker, async (req, res) => {
     logger.info('User : ' + res?.locals?.decoded?.payload?.sub + ' collections fetched successfully')
     timer({...metricsLabels, success: true});
     return res
+    
             .status(200)
             .json(supabaseData);
 

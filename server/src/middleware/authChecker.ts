@@ -42,11 +42,13 @@ const authChecker = async (
     const decoded = await verifyProjectJWT(token);
 
     res.locals.authenticated = true;
-    res.locals.decoded = decoded.payload;
+    res.locals.decoded = decoded;
 
     logger.debug(
       `Successfully authenticated user with id: ${decoded.payload.sub}`,
     );
+
+    logger.debug(res.locals);
 
     next();
   } catch (err: unknown) {
